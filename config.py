@@ -80,8 +80,8 @@ class Config:
     # 绘图参数
     PLOT_INTERVAL = 2  # 每N局游戏更新绘图 
     
-    # 性能优化选项
-    USE_NUMBA = True  # 是否启用numba加速，False则使用纯Python版本
+    # 性能优化配置
+    USE_NUMBA = False  # 是否启用Numba加速
     
     @staticmethod
     def init():
