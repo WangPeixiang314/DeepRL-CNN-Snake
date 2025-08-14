@@ -4,8 +4,8 @@ from enum import Enum
 
 from config import Config
 from direction import Direction
-from help_nb import distance_nb, is_collision_nb, random_position_nb, place_food_nb, step_logic_nb
-from help_nb import get_head_pos_nb, get_food_pos_nb, get_relative_distance_nb, get_manhattan_distance_nb, \
+from help.numba_help.help_nb import distance_nb, is_collision_nb, random_position_nb, place_food_nb, step_logic_nb
+from help.numba_help.help_nb import get_head_pos_nb, get_food_pos_nb, get_relative_distance_nb, get_manhattan_distance_nb, \
     get_direction_onehot_nb, get_eight_direction_dangers_nb, get_boundary_distances_nb, get_snake_length_nb, \
     get_free_space_ratio_nb, get_local_grid_view_nb, get_local_grid_view_nb, get_action_history_onehot_nb
 
@@ -92,7 +92,7 @@ class SnakeGame:
         
         # 导入CNN特征提取函数
         from cnn_features import get_CNN_all_grid_view, get_CNN_local_grid_view
-        from help_nb import get_all_grid_view_nb
+        from help.numba_help.help_nb import get_all_grid_view_nb
         
         # 合并所有状态特征，包括CNN特征
         return np.concatenate([

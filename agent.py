@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 from config import Config
-from help_nb import safe_action_nb
+from help.numba_help.help_nb import safe_action_nb
 from memory import PrioritizedReplayBuffer
 from model import DQN
 

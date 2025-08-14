@@ -2,7 +2,7 @@ import numpy as np
 import torch
 
 from config import Config
-from help_nb import propagate_nb, retrieve_nb, batch_retrieve_nb, batch_retrieve_par_nb
+from help.numba_help.help_nb import propagate_nb, retrieve_nb, batch_retrieve_nb, batch_retrieve_par_nb
 
 
 class SumTree:
