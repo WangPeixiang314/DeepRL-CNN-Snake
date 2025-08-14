@@ -182,24 +182,6 @@ def batch_retrieve_nb(tree, capacity, s_values):
         indices[i] = idx
     return indices
 
-# 并行版本（高性能）
-@numba.njit(fastmath=True, cache=True, inline='always', looplift=True, error_model='numpy', parallel=True)
-def batch_retrieve_par_nb(tree, capacity, s_values):
-    n = s_values.shape[0]
-    indices = np.empty(n, dtype=np.int64)
-    for i in numba.prange(n):  # 并行循环
-        s = s_values[i]
-        idx = 0
-        while idx < capacity - 1:
-            left = 2 * idx + 1
-            if s <= tree[left]:
-                idx = left
-            else:
-                s -= tree[left]
-                idx = left + 1
-        indices[i] = idx
-    return indices
-
 @njit_decorator
 def safe_action_nb(q_values, danger_signals, collision_penalty, state):
     """
