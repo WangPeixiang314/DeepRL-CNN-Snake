@@ -178,7 +178,8 @@ def load_initial_trials(file_path):
 if __name__ == '__main__':
     # 创建Optuna研究
     study = optuna.create_study(
-        direction='maximize'
+        direction='maximize',
+        sampler=optuna.samplers.TPESampler(n_startup_trials=10),
     )
     
     # 加载并添加已知超参数组合
