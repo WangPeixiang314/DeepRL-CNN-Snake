@@ -64,4 +64,4 @@ def parse_log_file(log_file_path, json_file_path):
     print(f"已将日志文件转换为JSON格式，保存到 {json_file_path}")
 
 if __name__ == "__main__":
-    parse_log_file("hyperparameter_optimization_log.txt", "hyperparameter_optimization_results.json")
+    parse_log_file("hyperparameter_optimization_log.txt", "initial_hyperparameters.json")

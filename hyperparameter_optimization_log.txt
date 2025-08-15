@@ -140,3 +140,6 @@
 该组合评分为：7.2170，当前历史最高评分：7.4190
 当前超参数组合为：{'learning_rate': 0.00014870835907093583, 'batch_size': 128, 'cnn_all_dim': 64, 'cnn_local_dim': 64, 'layer_count': 2, 'base_size': 512, 'size_decay': 0.8, 'gamma': 0.991, 'target_update': 50, 'food_reward': 20.0, 'death_penalty': -27.0, 'progress_reward': 0.0, 'step_penalty': 0.20000000000000007, 'eps_decay': 80000}
 该组合评分为：6.5150，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 0.00010559712922853515, 'batch_size': 128, 'cnn_all_dim': 64, 'cnn_local_dim': 64, 'layer_count': 2, 'base_size': 512, 'size_decay': 0.8, 'gamma': 0.986, 'target_update': 100, 'food_reward': 19.0, 'death_penalty': -25.0, 'progress_reward': 0.5, 'step_penalty': 0.10000000000000009, 'eps_decay': 80000}
+该组合评分为：6.9430，当前历史最高评分：7.4190
+

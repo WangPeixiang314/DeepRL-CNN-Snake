@@ -64,7 +64,7 @@ def objective(trial):
     
     # 使用多进程并行训练并返回平均分数
     parallel = 5
-    num_episodes = 200
+    num_episodes = 2
     with mp.Pool(processes=parallel) as pool:
         args = [(num_episodes, False, False) for _ in range(parallel)]
         scores = pool.map(train_wrapper, args)
@@ -81,17 +81,6 @@ def objective(trial):
     with open(log_file, "a", encoding="utf-8") as f:
         f.write(log_line + '\n')
     print(log_line)
-    
-    # 实时保存优化结果到JSON文件
-    import json
-    result = {
-        "trial_number": trial.number,
-        "params": trial.params,
-        "score": score,
-        "best_score_so_far": max(current_best_score, score)
-    }
-    with open("hyperparameter_optimization_results.json", "a", encoding="utf-8") as f:
-        f.write(json.dumps(result, ensure_ascii=False) + "\n")
     
     return score
 
@@ -178,8 +167,7 @@ def load_initial_trials(file_path):
 if __name__ == '__main__':
     # 创建Optuna研究
     study = optuna.create_study(
-        direction='maximize',
-        sampler=optuna.samplers.TPESampler(n_startup_trials=10),
+        direction='maximize'
     )
     
     # 加载并添加已知超参数组合
@@ -188,65 +176,9 @@ if __name__ == '__main__':
     for trial in initial_trials:
         study.add_trial(trial)
     
-    # 设置实时可视化
-    try:
-        import matplotlib.pyplot as plt
-        plt.ion()  # 开启交互模式
-        fig, ax = plt.subplots()
-        ax.set_xlabel('Trial')
-        ax.set_ylabel('Score')
-        ax.set_title('Optimization History')
-        
-        # 初始化历史数据
-        scores = []
-        best_scores = []
-        trials = []
-        
-        # 添加初始试验数据
-        if initial_trials:
-            initial_scores = [trial.value for trial in initial_trials]
-            initial_trial_numbers = [trial.number for trial in initial_trials]
-            scores.extend(initial_scores)
-            trials.extend(initial_trial_numbers)
-            
-            # 计算初始最佳分数序列
-            best_score = float('-inf')
-            for score in initial_scores:
-                if score > best_score:
-                    best_score = score
-                best_scores.append(best_score)
-        
-        line1, = ax.plot(trials, scores, 'b-', label='Current Score')
-        line2, = ax.plot(trials, best_scores, 'r-', label='Best Score')
-        ax.legend()
-        plt.show()
-    except ImportError:
-        print("无法导入matplotlib，将不显示实时图表")
-        plt = None
-    
     def objective_with_callback(trial):
         # 调用原始的目标函数
         score = objective(trial)
-        
-        # 更新实时图表
-        if plt is not None:
-            try:
-                scores.append(score)
-                trials.append(trial.number)
-                if best_scores:
-                    best_scores.append(max(best_scores[-1], score))
-                else:
-                    best_scores.append(score)
-                
-                line1.set_data(trials, scores)
-                line2.set_data(trials, best_scores)
-                ax.relim()
-                ax.autoscale_view()
-                plt.draw()
-                fig.canvas.flush_events()
-                plt.pause(0.01)
-            except Exception as e:
-                print(f"更新图表时出错: {e}")
         
         return score
     
@@ -266,14 +198,3 @@ if __name__ == '__main__':
         f.write("最佳超参数组合:\n")
         for key, value in study.best_params.items():
             f.write(f"{key}: {value}\n")
-    
-    # 可视化优化过程
-    if plt is not None:
-        plt.ioff()  # 关闭交互模式
-        plt.show()
-    
-    fig = optuna.visualization.plot_optimization_history(study)
-    fig.show()
-    
-    fig = optuna.visualization.plot_param_importances(study)
-    fig.show()
