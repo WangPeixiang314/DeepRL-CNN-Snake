@@ -31,17 +31,19 @@ def objective(trial):
     # 4. 网络架构
     layer_count = trial.suggest_int('layer_count', 2, 5)
     base_size = trial.suggest_categorical('base_size', [128, 256, 512, 1024])
-    size_decay = trial.suggest_float('size_decay', 0.5, 0.9)
+    size_decay = trial.suggest_float('size_decay', 0.5, 0.9, step=0.1)
+
 
     # 5. 训练参数
-    gamma = trial.suggest_float('gamma', 0.95, 0.999)
+    gamma = trial.suggest_float('gamma', 0.95, 0.999, step=0.001)
+
     target_update = trial.suggest_int('target_update', 50, 500, step=50)
 
     # 6. 奖励参数
-    food_reward = trial.suggest_float('food_reward', 10.0, 30.0)
-    death_penalty = trial.suggest_float('death_penalty', -30.0, -10.0)
-    progress_reward = trial.suggest_float('progress_reward', 0.0, 5.0)
-    step_penalty = trial.suggest_float('step_penalty', -0.5, 0.5)
+    food_reward = trial.suggest_float('food_reward', 10.0, 30.0, step=1.0)
+    death_penalty = trial.suggest_float('death_penalty', -30.0, -10.0, step=1.0)
+    progress_reward = trial.suggest_float('progress_reward', 0.0, 5.0, step=0.5)
+    step_penalty = trial.suggest_float('step_penalty', -0.5, 0.5, step=0.1)
     
     # 7. 探索参数
     eps_decay = trial.suggest_int('eps_decay', 10_000, 100_000, step=10_000)
@@ -62,7 +64,7 @@ def objective(trial):
     
     # 使用多进程并行训练并返回平均分数
     parallel = 5
-    num_episodes = 300
+    num_episodes = 200
     with mp.Pool(processes=parallel) as pool:
         args = [(num_episodes, False, False) for _ in range(parallel)]
         scores = pool.map(train_wrapper, args)
@@ -80,11 +82,24 @@ def objective(trial):
         f.write(log_line + '\n')
     print(log_line)
     
+    # 实时保存优化结果到JSON文件
+    import json
+    result = {
+        "trial_number": trial.number,
+        "params": trial.params,
+        "score": score,
+        "best_score_so_far": max(current_best_score, score)
+    }
+    with open("hyperparameter_optimization_results.json", "a", encoding="utf-8") as f:
+        f.write(json.dumps(result, ensure_ascii=False) + "\n")
+    
     return score
 
 
 import json
+import datetime
 from optuna.trial import FrozenTrial, TrialState
+from optuna.distributions import FloatDistribution, IntDistribution, CategoricalDistribution
 
 def load_initial_trials(file_path):
     """加载已知超参数组合及其分数作为初始试验"""
@@ -94,14 +109,62 @@ def load_initial_trials(file_path):
             
         trials = []
         for i, entry in enumerate(initial_data):
+            # 创建参数分布字典
+            distributions = {}
+            for param_name, param_value in entry['params'].items():
+                if isinstance(param_value, float):
+                    # 对于浮点数参数，我们需要确定其范围
+                    # 这里我们使用一个合理的默认范围
+                    if param_name == 'learning_rate':
+                        distributions[param_name] = FloatDistribution(1e-5, 1e-3, log=True)
+                    elif param_name in ['size_decay', 'gamma']:
+                        distributions[param_name] = FloatDistribution(0.0, 1.0)
+                    elif param_name in ['food_reward', 'death_penalty', 'progress_reward', 'step_penalty']:
+                        distributions[param_name] = FloatDistribution(-100.0, 100.0)
+                    else:
+                        distributions[param_name] = FloatDistribution(0.0, 1.0)
+                elif isinstance(param_value, int):
+                    # 对于整数参数，我们需要确定其范围
+                    if param_name == 'batch_size':
+                        distributions[param_name] = CategoricalDistribution([32, 64, 128, 256, 512])
+                    elif param_name == 'layer_count':
+                        distributions[param_name] = IntDistribution(2, 5)
+                    elif param_name == 'base_size':
+                        distributions[param_name] = CategoricalDistribution([128, 256, 512, 1024])
+                    elif param_name == 'target_update':
+                        distributions[param_name] = IntDistribution(50, 500)
+                    elif param_name == 'eps_decay':
+                        distributions[param_name] = IntDistribution(10_000, 100_000)
+                    elif param_name == 'cnn_all_dim':
+                        distributions[param_name] = CategoricalDistribution([32, 64, 128, 256])
+                    elif param_name == 'cnn_local_dim':
+                        distributions[param_name] = CategoricalDistribution([16, 32, 64, 128])
+                    else:
+                        distributions[param_name] = IntDistribution(0, 1000)
+                elif isinstance(param_value, str):
+                    # 对于字符串参数，我们假设它们是分类的
+                    # 这里我们使用一个占位符，实际应用中需要根据具体情况调整
+                    distributions[param_name] = CategoricalDistribution([param_value])
+                else:
+                    # 对于其他类型，我们使用一个通用的分布
+                    distributions[param_name] = FloatDistribution(0.0, 1.0)
+            
+            # 创建时间戳
+            import datetime
+            now = datetime.datetime.now()
+            
             trial = FrozenTrial(
-                number=i,
+                number=entry['trial_number'],
                 state=TrialState.COMPLETE,
-                params=entry['params'],
                 value=entry['score'],
+                datetime_start=now,
+                datetime_complete=now,
+                params=entry['params'],
+                distributions=distributions,
                 user_attrs={},
                 system_attrs={},
                 intermediate_values={},
+                trial_id=entry['trial_number']
             )
             trials.append(trial)
         return trials
@@ -120,11 +183,74 @@ if __name__ == '__main__':
     
     # 加载并添加已知超参数组合
     initial_trials = load_initial_trials('initial_hyperparameters.json')
+    print(f"成功读取 {len(initial_trials)} 条先验知识")
     for trial in initial_trials:
         study.add_trial(trial)
     
+    # 设置实时可视化
+    try:
+        import matplotlib.pyplot as plt
+        plt.ion()  # 开启交互模式
+        fig, ax = plt.subplots()
+        ax.set_xlabel('Trial')
+        ax.set_ylabel('Score')
+        ax.set_title('Optimization History')
+        
+        # 初始化历史数据
+        scores = []
+        best_scores = []
+        trials = []
+        
+        # 添加初始试验数据
+        if initial_trials:
+            initial_scores = [trial.value for trial in initial_trials]
+            initial_trial_numbers = [trial.number for trial in initial_trials]
+            scores.extend(initial_scores)
+            trials.extend(initial_trial_numbers)
+            
+            # 计算初始最佳分数序列
+            best_score = float('-inf')
+            for score in initial_scores:
+                if score > best_score:
+                    best_score = score
+                best_scores.append(best_score)
+        
+        line1, = ax.plot(trials, scores, 'b-', label='Current Score')
+        line2, = ax.plot(trials, best_scores, 'r-', label='Best Score')
+        ax.legend()
+        plt.show()
+    except ImportError:
+        print("无法导入matplotlib，将不显示实时图表")
+        plt = None
+    
+    def objective_with_callback(trial):
+        # 调用原始的目标函数
+        score = objective(trial)
+        
+        # 更新实时图表
+        if plt is not None:
+            try:
+                scores.append(score)
+                trials.append(trial.number)
+                if best_scores:
+                    best_scores.append(max(best_scores[-1], score))
+                else:
+                    best_scores.append(score)
+                
+                line1.set_data(trials, scores)
+                line2.set_data(trials, best_scores)
+                ax.relim()
+                ax.autoscale_view()
+                plt.draw()
+                fig.canvas.flush_events()
+                plt.pause(0.01)
+            except Exception as e:
+                print(f"更新图表时出错: {e}")
+        
+        return score
+    
     # 运行优化
-    study.optimize(objective, n_trials=1000, show_progress_bar=True)
+    study.optimize(objective_with_callback, n_trials=1000, show_progress_bar=True)
     
     # 打印最佳结果
     print("\n" + "="*50)
@@ -141,6 +267,10 @@ if __name__ == '__main__':
             f.write(f"{key}: {value}\n")
     
     # 可视化优化过程
+    if plt is not None:
+        plt.ioff()  # 关闭交互模式
+        plt.show()
+    
     fig = optuna.visualization.plot_optimization_history(study)
     fig.show()
     

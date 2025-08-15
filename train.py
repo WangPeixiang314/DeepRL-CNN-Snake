@@ -134,7 +134,7 @@ if __name__ == "__main__":
     import time
     begin = time.time()
     try:
-        N = 500
+        N = 50000
         train(num_episodes=N, visualize=True, verbose=True)
     except KeyboardInterrupt:
         print("训练已中断")

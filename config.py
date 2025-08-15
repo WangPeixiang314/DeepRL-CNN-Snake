@@ -19,11 +19,11 @@ class Config:
     SPEED = 600
     
     # 模型参数
-    HIDDEN_LAYERS = [256, 128, 64, 32]  # 隐藏层配置
+    HIDDEN_LAYERS = [1024, 512, 256, 128, 64, 32, 16]  # 隐藏层配置
     OUTPUT_DIM = 3   # [直行, 右转, 左转]
     
     # CNN网络参数 - 全局地图CNN
-    CNN_ALL_GRID_OUTPUT_DIM = 64  # 全局CNN输出特征维度
+    CNN_ALL_GRID_OUTPUT_DIM = 128  # 全局CNN输出特征维度
     CNN_ALL_GRID_CONFIG = {
         'input_channels': 3,    # 输入通道数 [蛇身, 食物, 蛇头]
         'conv_layers': [16, 32, 64],  # 每层卷积核数量
@@ -36,7 +36,7 @@ class Config:
     }
     
     # CNN网络参数 - 局部视野CNN
-    CNN_LOCAL_OUTPUT_DIM = 32  # 局部CNN输出特征维度
+    CNN_LOCAL_OUTPUT_DIM = 64  # 局部CNN输出特征维度
     CNN_LOCAL_CONFIG = {
         'input_channels': 3,    # 输入通道数 [蛇身, 食物, 蛇头]
         'conv_layers': [8, 16], # 每层卷积核数量
@@ -81,7 +81,7 @@ class Config:
     PLOT_INTERVAL = 2  # 每N局游戏更新绘图 
     
     # 性能优化配置
-    USE_NUMBA = False  # 是否启用Numba加速
+    USE_NUMBA = True  # 是否启用Numba加速
     
     @staticmethod
     def init():
