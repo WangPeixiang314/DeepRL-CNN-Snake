@@ -3,7 +3,6 @@ import numpy as np
 from pygame import fastevent
 
 # 辅助函数
-
 def distance_py(pos1, pos2):
     """计算两点之间的曼哈顿距离"""
     return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
@@ -162,29 +161,10 @@ def retrieve_py(tree, capacity, s):
     return idx
 
 # 顺序版本（安全）
-
 def batch_retrieve_py(tree, capacity, s_values):
     n = s_values.shape[0]
     indices = np.empty(n, dtype=np.int64)
     for i in range(n):
-        s = s_values[i]
-        idx = 0
-        while idx < capacity - 1:
-            left = 2 * idx + 1
-            if s <= tree[left]:
-                idx = left
-            else:
-                s -= tree[left]
-                idx = left + 1
-        indices[i] = idx
-    return indices
-
-# 并行版本（高性能）
-@numba.njit(fastmath=True, cache=True, inline='always', looplift=True, error_model='numpy', parallel=True)
-def batch_retrieve_par_py(tree, capacity, s_values):
-    n = s_values.shape[0]
-    indices = np.empty(n, dtype=np.int64)
-    for i in numba.prange(n):  # 并行循环
         s = s_values[i]
         idx = 0
         while idx < capacity - 1:
@@ -266,7 +246,6 @@ def get_manhattan_distance_py(head, food, width, height):
     return np.array([dist / (width + height)], dtype=np.float32)
 
 from direction import Direction
-
 
 def get_direction_onehot_py(direction):
     """获取当前移动方向 (4维one-hot)"""

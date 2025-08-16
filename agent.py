@@ -5,11 +5,8 @@ import torch.optim as optim
 
 from config import Config
 
-# 根据配置选择Numba加速或Python原生版本
-if Config.USE_NUMBA:
-    from help.numba_help.help_nb import safe_action_nb
-else:
-    from help.Python_help.help_py import safe_action_py as safe_action_nb
+from help.numba_help.help_nb import safe_action_nb
+
 
 from memory import PrioritizedReplayBuffer
 from model import DQN

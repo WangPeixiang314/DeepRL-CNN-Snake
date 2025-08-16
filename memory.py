@@ -3,14 +3,7 @@ import torch
 
 from config import Config
 
-# 根据配置选择Numba加速或Python原生版本
-if Config.USE_NUMBA:
-    from help.numba_help.help_nb import propagate_nb, retrieve_nb, batch_retrieve_nb, batch_retrieve_par_nb
-else:
-    from help.Python_help.help_py import propagate_py as propagate_nb
-    from help.Python_help.help_py import retrieve_py as retrieve_nb
-    from help.Python_help.help_py import batch_retrieve_py as batch_retrieve_nb
-    from help.Python_help.help_py import batch_retrieve_par_py as batch_retrieve_par_nb
+from help.numba_help.help_nb import propagate_nb, retrieve_nb, batch_retrieve_nb
 
 
 class SumTree:

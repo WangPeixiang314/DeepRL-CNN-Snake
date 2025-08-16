@@ -5,30 +5,11 @@ from enum import Enum
 from config import Config
 from direction import Direction
 
-# 根据配置选择Numba加速或Python原生版本
-if Config.USE_NUMBA:
-    from help.numba_help.help_nb import distance_nb, is_collision_nb, random_position_nb, place_food_nb, step_logic_nb
-    from help.numba_help.help_nb import get_head_pos_nb, get_food_pos_nb, get_relative_distance_nb, get_manhattan_distance_nb, \
-        get_direction_onehot_nb, get_eight_direction_dangers_nb, get_boundary_distances_nb, get_snake_length_nb, \
-        get_free_space_ratio_nb, get_local_grid_view_nb, get_all_grid_view_nb, get_action_history_onehot_nb
-else:
-    from help.Python_help.help_py import distance_py as distance_nb
-    from help.Python_help.help_py import is_collision_py as is_collision_nb
-    from help.Python_help.help_py import random_position_py as random_position_nb
-    from help.Python_help.help_py import place_food_py as place_food_nb
-    from help.Python_help.help_py import step_logic_py as step_logic_nb
-    from help.Python_help.help_py import get_head_pos_py as get_head_pos_nb
-    from help.Python_help.help_py import get_food_pos_py as get_food_pos_nb
-    from help.Python_help.help_py import get_relative_distance_py as get_relative_distance_nb
-    from help.Python_help.help_py import get_manhattan_distance_py as get_manhattan_distance_nb
-    from help.Python_help.help_py import get_direction_onehot_py as get_direction_onehot_nb
-    from help.Python_help.help_py import get_eight_direction_dangers_py as get_eight_direction_dangers_nb
-    from help.Python_help.help_py import get_boundary_distances_py as get_boundary_distances_nb
-    from help.Python_help.help_py import get_snake_length_py as get_snake_length_nb
-    from help.Python_help.help_py import get_free_space_ratio_py as get_free_space_ratio_nb
-    from help.Python_help.help_py import get_local_grid_view_py as get_local_grid_view_nb
-    from help.Python_help.help_py import get_all_grid_view_py as get_all_grid_view_nb
-    from help.Python_help.help_py import get_action_history_onehot_py as get_action_history_onehot_nb
+from help.numba_help.help_nb import distance_nb, is_collision_nb, random_position_nb, place_food_nb, step_logic_nb
+from help.numba_help.help_nb import get_head_pos_nb, get_food_pos_nb, get_relative_distance_nb, get_manhattan_distance_nb, \
+    get_direction_onehot_nb, get_eight_direction_dangers_nb, get_boundary_distances_nb, get_snake_length_nb, \
+    get_free_space_ratio_nb, get_local_grid_view_nb, get_all_grid_view_nb, get_action_history_onehot_nb
+
 
 
 class Game:

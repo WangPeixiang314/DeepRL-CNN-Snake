@@ -5,9 +5,6 @@ import torch
 
 
 class Config:
-    # 设备配置
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
     # 网格参数
     GRID_WIDTH = 12   # 地图网格宽度（单位：格）
     GRID_HEIGHT = 12  # 地图网格高度（单位：格）
@@ -19,11 +16,20 @@ class Config:
     SPEED = 600
     
     # 模型参数
-    HIDDEN_LAYERS = [1024, 512, 256, 128, 64, 32, 16]  # 隐藏层配置
-    OUTPUT_DIM = 3   # [直行, 右转, 左转]
+    MLP_LAYER_COUNT = 2
+    MLP_BASE_SIZE = 512
+    MLP_SIZE_DECAY = 0.8
+    
+    @staticmethod
+    def _generate_hidden_layers(layer_count, base_size, size_decay):
+        """生成隐藏层配置列表"""
+        return [int(base_size * (size_decay ** i)) for i in range(layer_count)]
+    
+    HIDDEN_LAYERS = _generate_hidden_layers.__func__(MLP_LAYER_COUNT, MLP_BASE_SIZE, MLP_SIZE_DECAY)  # 隐藏层配置
+    OUTPUT_DIM = 3  # 输出层大小 [直行, 右转, 左转]
     
     # CNN网络参数 - 全局地图CNN
-    CNN_ALL_GRID_OUTPUT_DIM = 128  # 全局CNN输出特征维度
+    CNN_ALL_GRID_OUTPUT_DIM = 64  # 全局CNN输出特征维度
     CNN_ALL_GRID_CONFIG = {
         'input_channels': 3,    # 输入通道数 [蛇身, 食物, 蛇头]
         'conv_layers': [16, 32, 64],  # 每层卷积核数量
@@ -50,8 +56,8 @@ class Config:
     # 训练参数
     BATCH_SIZE = 128
     MEMORY_CAPACITY = 800_000
-    LEARNING_RATE = 3.482e-05
-    GAMMA = 0.99
+    LEARNING_RATE = 0.00010406
+    GAMMA = 0.984
     TARGET_UPDATE = 100  # 更新目标网络的间隔
     MAX_STEPS_WITHOUT_FOOD = 500  # 最大无食物步数
     
@@ -64,13 +70,13 @@ class Config:
     # 探索参数
     EPS_START = 1.0
     EPS_END = 0.02
-    EPS_DECAY = 50000  # ε衰减步数 (增加以延长探索)
+    EPS_DECAY = 80000  # ε衰减步数 (增加以延长探索)
     
     # 奖励参数
-    FOOD_REWARD = 16.0
-    COLLISION_PENALTY = -10.0
-    STEP_PENALTY = 0.01
-    PROGRESS_REWARD = 0.1  # 向食物靠近的奖励
+    FOOD_REWARD = 20.0
+    COLLISION_PENALTY = -25.0
+    STEP_PENALTY = 0.2
+    PROGRESS_REWARD = 1.5  # 向食物靠近的奖励
     
     # 文件路径
     MODEL_DIR = './models'
@@ -80,15 +86,11 @@ class Config:
     # 绘图参数
     PLOT_INTERVAL = 2  # 每N局游戏更新绘图 
     
-    # 性能优化配置
-    USE_NUMBA = True  # 是否启用Numba加速
-    
     @staticmethod
     def init():
         """创建必要的目录"""
         if not os.path.exists(Config.MODEL_DIR):
             os.makedirs(Config.MODEL_DIR)
-
 
 # 初始化配置
 Config.init()
