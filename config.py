@@ -8,6 +8,7 @@ class Config:
     # 网格参数
     GRID_WIDTH = 12   # 地图网格宽度（单位：格）
     GRID_HEIGHT = 12  # 地图网格高度（单位：格）
+    LOCAL_VIEW_SIZE = 6  # 局部视野大小（边长，必须是偶数）
     BLOCK_SIZE = 40   # 每个网格块的像素大小
     WIDTH = GRID_WIDTH * BLOCK_SIZE
     HEIGHT = GRID_HEIGHT * BLOCK_SIZE
@@ -51,6 +52,7 @@ class Config:
         'kernel_size': 3,       # 卷积核大小
         'stride': 1,            # 步长
         'padding': 1,           # 填充
+        'use_pooling': False,    # 是否使用池化层
         'feature_dim': CNN_LOCAL_OUTPUT_DIM,  # 输出特征维度
         'adaptive_pool_size': (3, 3)  # 自适应池化输出大小
     }

@@ -64,7 +64,7 @@ def objective(trial):
     
     # 使用多进程并行训练并返回平均分数
     parallel = 5
-    num_episodes = 2
+    num_episodes = 200
     with mp.Pool(processes=parallel) as pool:
         args = [(num_episodes, False, False) for _ in range(parallel)]
         scores = pool.map(train_wrapper, args)
