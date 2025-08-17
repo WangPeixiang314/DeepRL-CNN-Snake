@@ -19,38 +19,40 @@ class CNNFeatureExtractor(nn.Module):
         if feature_dim is None:
             feature_dim = config['feature_dim']
         
-        # 定义CNN层
+        # 动态创建CNN层
         conv_layers = config['conv_layers']
-        self.conv1 = nn.Conv2d(input_channels, conv_layers[0], 
-                              kernel_size=config['kernel_size'], 
-                              stride=config['stride'], 
-                              padding=config['padding'])
-        self.conv2 = nn.Conv2d(conv_layers[0], conv_layers[1], 
-                              kernel_size=config['kernel_size'], 
-                              stride=config['stride'], 
-                              padding=config['padding'])
-        self.conv3 = nn.Conv2d(conv_layers[1], conv_layers[2], 
-                              kernel_size=config['kernel_size'], 
-                              stride=config['stride'], 
-                              padding=config['padding'])
+        self.conv_layers = nn.ModuleList()
         
-        # 定义池化层
-        self.pool = nn.MaxPool2d(config['pool_size'], config['pool_size'])
+        in_channels = input_channels
+        for i, out_channels in enumerate(conv_layers):
+            self.conv_layers.append(
+                nn.Conv2d(in_channels, out_channels, 
+                         kernel_size=config['kernel_size'], 
+                         stride=config['stride'], 
+                         padding=config['padding'])
+            )
+            in_channels = out_channels
+        
+        # 池化层配置
+        self.use_pooling = config.get('use_pooling', True)
+        self.pool_layers = config.get('pool_layers', 2)
+        if self.use_pooling:
+            self.pool = nn.MaxPool2d(config['pool_size'], config['pool_size'])
         
         # 自适应池化层
         self.adaptive_pool = nn.AdaptiveAvgPool2d(config['adaptive_pool_size'])
         
-        # 计算全连接层输入维度
+        # 动态计算全连接层输入维度
         fc_input_dim = conv_layers[-1] * config['adaptive_pool_size'][0] * config['adaptive_pool_size'][1]
         self.fc = nn.Linear(fc_input_dim, feature_dim)
         
     def forward(self, x):
         """前向传播"""
-        x = F.relu(self.conv1(x))
-        x = self.pool(x)
-        x = F.relu(self.conv2(x))
-        x = self.pool(x)
-        x = F.relu(self.conv3(x))
+        for i, conv in enumerate(self.conv_layers):
+            x = F.relu(conv(x))
+            # 根据配置使用池化
+            if self.use_pooling and i < self.pool_layers and i < len(self.conv_layers) - 1:
+                x = self.pool(x)
         x = self.adaptive_pool(x)
         x = x.view(x.size(0), -1)  # 展平
         x = F.relu(self.fc(x))
@@ -69,28 +71,31 @@ class LocalCNNFeatureExtractor(nn.Module):
         if feature_dim is None:
             feature_dim = config['feature_dim']
         
-        # 定义CNN层 - 针对局部视野
+        # 动态创建CNN层
         conv_layers = config['conv_layers']
-        self.conv1 = nn.Conv2d(input_channels, conv_layers[0], 
-                              kernel_size=config['kernel_size'], 
-                              stride=config['stride'], 
-                              padding=config['padding'])
-        self.conv2 = nn.Conv2d(conv_layers[0], conv_layers[1], 
-                              kernel_size=config['kernel_size'], 
-                              stride=config['stride'], 
-                              padding=config['padding'])
+        self.conv_layers = nn.ModuleList()
+        
+        in_channels = input_channels
+        for out_channels in conv_layers:
+            self.conv_layers.append(
+                nn.Conv2d(in_channels, out_channels, 
+                         kernel_size=config['kernel_size'], 
+                         stride=config['stride'], 
+                         padding=config['padding'])
+            )
+            in_channels = out_channels
         
         # 自适应池化到固定大小
         self.adaptive_pool = nn.AdaptiveAvgPool2d(config['adaptive_pool_size'])
         
-        # 计算全连接层输入维度
+        # 动态计算全连接层输入维度
         fc_input_dim = conv_layers[-1] * config['adaptive_pool_size'][0] * config['adaptive_pool_size'][1]
         self.fc = nn.Linear(fc_input_dim, feature_dim)
         
     def forward(self, x):
         """前向传播"""
-        x = F.relu(self.conv1(x))
-        x = F.relu(self.conv2(x))
+        for conv in self.conv_layers:
+            x = F.relu(conv(x))
         x = self.adaptive_pool(x)
         x = x.view(x.size(0), -1)  # 展平
         x = F.relu(self.fc(x))

@@ -16,7 +16,7 @@ class Config:
     SPEED = 600
     
     # 模型参数
-    MLP_LAYER_COUNT = 2
+    MLP_LAYER_COUNT = 3
     MLP_BASE_SIZE = 512
     MLP_SIZE_DECAY = 0.8
     
@@ -29,33 +29,35 @@ class Config:
     OUTPUT_DIM = 3  # 输出层大小 [直行, 右转, 左转]
     
     # CNN网络参数 - 全局地图CNN
-    CNN_ALL_GRID_OUTPUT_DIM = 64  # 全局CNN输出特征维度
+    CNN_ALL_GRID_OUTPUT_DIM = 128  # 全局CNN输出特征维度
     CNN_ALL_GRID_CONFIG = {
         'input_channels': 3,    # 输入通道数 [蛇身, 食物, 蛇头]
-        'conv_layers': [16, 32, 64],  # 每层卷积核数量
+        'conv_layers': [16, 32, 64],  # 每层卷积核数量（支持任意层数）
         'kernel_size': 3,       # 卷积核大小
         'stride': 1,            # 步长
         'padding': 1,           # 填充
-        'pool_size': 2,         # 池化大小 (仅在前两层使用)
+        'pool_size': 2,         # 池化大小
+        'use_pooling': True,    # 是否使用池化层
+        'pool_layers': 2,       # 前几层使用池化
         'feature_dim': CNN_ALL_GRID_OUTPUT_DIM,  # 输出特征维度
-        'adaptive_pool_size': (3, 3)  # 自适应池化输出大小 (增大避免信息损失)
+        'adaptive_pool_size': (3, 3)  # 自适应池化输出大小
     }
     
     # CNN网络参数 - 局部视野CNN
     CNN_LOCAL_OUTPUT_DIM = 64  # 局部CNN输出特征维度
     CNN_LOCAL_CONFIG = {
         'input_channels': 3,    # 输入通道数 [蛇身, 食物, 蛇头]
-        'conv_layers': [8, 16], # 每层卷积核数量
+        'conv_layers': [8, 16, 32],  # 每层卷积核数量（支持任意层数）
         'kernel_size': 3,       # 卷积核大小
         'stride': 1,            # 步长
         'padding': 1,           # 填充
         'feature_dim': CNN_LOCAL_OUTPUT_DIM,  # 输出特征维度
-        'adaptive_pool_size': (2, 2)  # 自适应池化输出大小
+        'adaptive_pool_size': (3, 3)  # 自适应池化输出大小
     }
     
     # 训练参数
     BATCH_SIZE = 128
-    MEMORY_CAPACITY = 800_000
+    MEMORY_CAPACITY = 4000_000
     LEARNING_RATE = 0.00010406
     GAMMA = 0.984
     TARGET_UPDATE = 100  # 更新目标网络的间隔
