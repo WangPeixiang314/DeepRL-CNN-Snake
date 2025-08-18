@@ -82,6 +82,9 @@ class Config:
     STEP_PENALTY = 0.2
     PROGRESS_REWARD = 1.5  # 向食物靠近的奖励
     
+    # 防自杀功能
+    ENABLE_SUICIDE_PREVENTION = True  # 是否启用防自杀机制
+    
     # 文件路径
     MODEL_DIR = './models'
     MODEL_FILE = 'snake_dqn.pth'

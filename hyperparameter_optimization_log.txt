@@ -142,4 +142,127 @@
 该组合评分为：6.5150，当前历史最高评分：7.4190
 当前超参数组合为：{'learning_rate': 0.00010559712922853515, 'batch_size': 128, 'cnn_all_dim': 64, 'cnn_local_dim': 64, 'layer_count': 2, 'base_size': 512, 'size_decay': 0.8, 'gamma': 0.986, 'target_update': 100, 'food_reward': 19.0, 'death_penalty': -25.0, 'progress_reward': 0.5, 'step_penalty': 0.10000000000000009, 'eps_decay': 80000}
 该组合评分为：6.9430，当前历史最高评分：7.4190
-
+当前超参数组合为：{'learning_rate': 0.00013299972556718822, 'batch_size': 128, 'cnn_all_dim': 64, 'cnn_local_dim': 64, 'layer_count': 2, 'base_size': 512, 'size_decay': 0.8, 'gamma': 0.983, 'target_update': 100, 'food_reward': 25.0, 'death_penalty': -25.0, 'progress_reward': 1.0, 'step_penalty': 0.20000000000000007, 'eps_decay': 70000}
+该组合评分为：6.7400，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 0.00018970044448811285, 'batch_size': 128, 'cnn_all_dim': 64, 'cnn_local_dim': 64, 'layer_count': 2, 'base_size': 512, 'size_decay': 0.9, 'gamma': 0.987, 'target_update': 100, 'food_reward': 18.0, 'death_penalty': -23.0, 'progress_reward': 1.0, 'step_penalty': 0.10000000000000009, 'eps_decay': 80000}
+该组合评分为：6.6740，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 7.054789675167135e-05, 'batch_size': 128, 'cnn_all_dim': 64, 'cnn_local_dim': 64, 'layer_count': 2, 'base_size': 512, 'size_decay': 0.8, 'gamma': 0.994, 'target_update': 100, 'food_reward': 19.0, 'death_penalty': -22.0, 'progress_reward': 0.5, 'step_penalty': 0.0, 'eps_decay': 70000}
+该组合评分为：6.6600，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 0.00024110254383573356, 'batch_size': 128, 'cnn_all_dim': 64, 'cnn_local_dim': 64, 'layer_count': 2, 'base_size': 512, 'size_decay': 0.8, 'gamma': 0.988, 'target_update': 450, 'food_reward': 22.0, 'death_penalty': -27.0, 'progress_reward': 1.0, 'step_penalty': 0.20000000000000007, 'eps_decay': 90000}
+该组合评分为：6.7820，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 9.051492938575548e-05, 'batch_size': 128, 'cnn_all_dim': 64, 'cnn_local_dim': 64, 'layer_count': 2, 'base_size': 512, 'size_decay': 0.9, 'gamma': 0.984, 'target_update': 150, 'food_reward': 20.0, 'death_penalty': -21.0, 'progress_reward': 0.5, 'step_penalty': 0.30000000000000004, 'eps_decay': 70000}
+该组合评分为：6.8520，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 3.320242938268879e-05, 'batch_size': 256, 'cnn_all_dim': 64, 'cnn_local_dim': 16, 'layer_count': 5, 'base_size': 512, 'size_decay': 0.7, 'gamma': 0.956, 'target_update': 50, 'food_reward': 23.0, 'death_penalty': -23.0, 'progress_reward': 0.0, 'step_penalty': 0.0, 'eps_decay': 80000}
+该组合评分为：6.5530，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 0.0001289443725153246, 'batch_size': 128, 'cnn_all_dim': 64, 'cnn_local_dim': 32, 'layer_count': 2, 'base_size': 512, 'size_decay': 0.8, 'gamma': 0.952, 'target_update': 150, 'food_reward': 17.0, 'death_penalty': -28.0, 'progress_reward': 1.5, 'step_penalty': 0.10000000000000009, 'eps_decay': 30000}
+该组合评分为：6.6080，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 0.00016110840467247555, 'batch_size': 32, 'cnn_all_dim': 256, 'cnn_local_dim': 64, 'layer_count': 4, 'base_size': 1024, 'size_decay': 0.8, 'gamma': 0.981, 'target_update': 100, 'food_reward': 22.0, 'death_penalty': -24.0, 'progress_reward': 1.0, 'step_penalty': 0.4, 'eps_decay': 20000}
+该组合评分为：6.6410，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 0.00036150149888623757, 'batch_size': 128, 'cnn_all_dim': 64, 'cnn_local_dim': 64, 'layer_count': 2, 'base_size': 512, 'size_decay': 0.7, 'gamma': 0.985, 'target_update': 150, 'food_reward': 21.0, 'death_penalty': -25.0, 'progress_reward': 0.5, 'step_penalty': 0.10000000000000009, 'eps_decay': 10000}
+该组合评分为：6.7320，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 4.737726878277993e-05, 'batch_size': 256, 'cnn_all_dim': 256, 'cnn_local_dim': 16, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.5, 'gamma': 0.971, 'target_update': 200, 'food_reward': 21.0, 'death_penalty': -21.0, 'progress_reward': 1.5, 'step_penalty': 0.20000000000000007, 'eps_decay': 100000}
+该组合评分为：6.7170，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 5.409003303056171e-05, 'batch_size': 128, 'cnn_all_dim': 128, 'cnn_local_dim': 64, 'layer_count': 4, 'base_size': 256, 'size_decay': 0.5, 'gamma': 0.977, 'target_update': 150, 'food_reward': 20.0, 'death_penalty': -19.0, 'progress_reward': 2.0, 'step_penalty': 0.20000000000000007, 'eps_decay': 90000}
+该组合评分为：6.8360，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 9.931773275727632e-05, 'batch_size': 64, 'cnn_all_dim': 64, 'cnn_local_dim': 64, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.7, 'gamma': 0.974, 'target_update': 350, 'food_reward': 21.0, 'death_penalty': -24.0, 'progress_reward': 1.5, 'step_penalty': 0.20000000000000007, 'eps_decay': 50000}
+该组合评分为：6.8710，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 6.079295625596817e-05, 'batch_size': 128, 'cnn_all_dim': 32, 'cnn_local_dim': 128, 'layer_count': 2, 'base_size': 512, 'size_decay': 0.8, 'gamma': 0.98, 'target_update': 200, 'food_reward': 23.0, 'death_penalty': -26.0, 'progress_reward': 1.5, 'step_penalty': 0.30000000000000004, 'eps_decay': 90000}
+该组合评分为：6.9500，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 7.739794652896853e-05, 'batch_size': 256, 'cnn_all_dim': 256, 'cnn_local_dim': 16, 'layer_count': 3, 'base_size': 128, 'size_decay': 0.5, 'gamma': 0.958, 'target_update': 450, 'food_reward': 19.0, 'death_penalty': -20.0, 'progress_reward': 1.0, 'step_penalty': 0.10000000000000009, 'eps_decay': 60000}
+该组合评分为：6.5860，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 0.00012052348006822826, 'batch_size': 512, 'cnn_all_dim': 128, 'cnn_local_dim': 64, 'layer_count': 4, 'base_size': 256, 'size_decay': 0.6, 'gamma': 0.992, 'target_update': 300, 'food_reward': 24.0, 'death_penalty': -18.0, 'progress_reward': 2.0, 'step_penalty': 0.20000000000000007, 'eps_decay': 30000}
+该组合评分为：6.7010，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 6.646804093396022e-05, 'batch_size': 128, 'cnn_all_dim': 64, 'cnn_local_dim': 32, 'layer_count': 3, 'base_size': 512, 'size_decay': 0.6, 'gamma': 0.976, 'target_update': 50, 'food_reward': 25.0, 'death_penalty': -22.0, 'progress_reward': 1.5, 'step_penalty': 0.0, 'eps_decay': 20000}
+该组合评分为：6.8360，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 2.0623399505104595e-05, 'batch_size': 32, 'cnn_all_dim': 256, 'cnn_local_dim': 64, 'layer_count': 2, 'base_size': 256, 'size_decay': 0.5, 'gamma': 0.967, 'target_update': 100, 'food_reward': 22.0, 'death_penalty': -23.0, 'progress_reward': 1.0, 'step_penalty': 0.30000000000000004, 'eps_decay': 10000}
+该组合评分为：6.7540，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 5.677052848842543e-05, 'batch_size': 64, 'cnn_all_dim': 64, 'cnn_local_dim': 16, 'layer_count': 3, 'base_size': 512, 'size_decay': 0.5, 'gamma': 0.971, 'target_update': 400, 'food_reward': 18.0, 'death_penalty': -20.0, 'progress_reward': 2.0, 'step_penalty': 0.10000000000000009, 'eps_decay': 100000}
+该组合评分为：6.9130，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 3.739617400317696e-05, 'batch_size': 256, 'cnn_all_dim': 256, 'cnn_local_dim': 64, 'layer_count': 4, 'base_size': 1024, 'size_decay': 0.7, 'gamma': 0.964, 'target_update': 250, 'food_reward': 26.0, 'death_penalty': -22.0, 'progress_reward': 1.0, 'step_penalty': 0.10000000000000009, 'eps_decay': 60000}
+该组合评分为：6.9340，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 3.1651313305250313e-05, 'batch_size': 128, 'cnn_all_dim': 256, 'cnn_local_dim': 64, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.5, 'gamma': 0.972, 'target_update': 450, 'food_reward': 16.0, 'death_penalty': -21.0, 'progress_reward': 0.5, 'step_penalty': 0.20000000000000007, 'eps_decay': 10000}
+该组合评分为：6.5350，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 4.82158419643977e-05, 'batch_size': 128, 'cnn_all_dim': 256, 'cnn_local_dim': 64, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.5, 'gamma': 0.973, 'target_update': 450, 'food_reward': 18.0, 'death_penalty': -11.0, 'progress_reward': 1.0, 'step_penalty': 0.20000000000000007, 'eps_decay': 20000}
+该组合评分为：6.9200，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 3.9513242113841724e-05, 'batch_size': 128, 'cnn_all_dim': 256, 'cnn_local_dim': 64, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.5, 'gamma': 0.969, 'target_update': 500, 'food_reward': 19.0, 'death_penalty': -23.0, 'progress_reward': 1.5, 'step_penalty': 0.20000000000000007, 'eps_decay': 40000}
+该组合评分为：6.8090，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 4.213899037308013e-05, 'batch_size': 128, 'cnn_all_dim': 256, 'cnn_local_dim': 64, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.5, 'gamma': 0.975, 'target_update': 400, 'food_reward': 15.0, 'death_penalty': -21.0, 'progress_reward': 0.5, 'step_penalty': 0.5, 'eps_decay': 20000}
+该组合评分为：6.7850，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 2.5975814733065092e-05, 'batch_size': 128, 'cnn_all_dim': 128, 'cnn_local_dim': 128, 'layer_count': 3, 'base_size': 128, 'size_decay': 0.5, 'gamma': 0.955, 'target_update': 450, 'food_reward': 20.0, 'death_penalty': -20.0, 'progress_reward': 2.5, 'step_penalty': 0.30000000000000004, 'eps_decay': 10000}
+该组合评分为：6.8230，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 3.0004435971394405e-05, 'batch_size': 64, 'cnn_all_dim': 32, 'cnn_local_dim': 64, 'layer_count': 2, 'base_size': 256, 'size_decay': 0.6, 'gamma': 0.96, 'target_update': 250, 'food_reward': 21.0, 'death_penalty': -25.0, 'progress_reward': 1.0, 'step_penalty': -0.4, 'eps_decay': 30000}
+该组合评分为：6.7340，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 2.2347034544011977e-05, 'batch_size': 256, 'cnn_all_dim': 256, 'cnn_local_dim': 16, 'layer_count': 4, 'base_size': 256, 'size_decay': 0.5, 'gamma': 0.978, 'target_update': 200, 'food_reward': 30.0, 'death_penalty': -19.0, 'progress_reward': 1.5, 'step_penalty': -0.19999999999999996, 'eps_decay': 20000}
+该组合评分为：6.7040，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 1.3515372597415974e-05, 'batch_size': 128, 'cnn_all_dim': 64, 'cnn_local_dim': 64, 'layer_count': 3, 'base_size': 512, 'size_decay': 0.5, 'gamma': 0.966, 'target_update': 500, 'food_reward': 23.0, 'death_penalty': -24.0, 'progress_reward': 0.0, 'step_penalty': 0.10000000000000009, 'eps_decay': 70000}
+该组合评分为：6.6070，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 3.4269220606828303e-05, 'batch_size': 128, 'cnn_all_dim': 128, 'cnn_local_dim': 64, 'layer_count': 2, 'base_size': 128, 'size_decay': 0.8, 'gamma': 0.97, 'target_update': 150, 'food_reward': 20.0, 'death_penalty': -22.0, 'progress_reward': 0.5, 'step_penalty': 0.20000000000000007, 'eps_decay': 10000}
+该组合评分为：6.6480，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 1.6959906552368447e-05, 'batch_size': 64, 'cnn_all_dim': 256, 'cnn_local_dim': 16, 'layer_count': 4, 'base_size': 256, 'size_decay': 0.6, 'gamma': 0.986, 'target_update': 100, 'food_reward': 22.0, 'death_penalty': -24.0, 'progress_reward': 4.5, 'step_penalty': 0.0, 'eps_decay': 80000}
+该组合评分为：6.7110，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 5.008222439565408e-05, 'batch_size': 256, 'cnn_all_dim': 256, 'cnn_local_dim': 16, 'layer_count': 4, 'base_size': 1024, 'size_decay': 0.6, 'gamma': 0.983, 'target_update': 100, 'food_reward': 24.0, 'death_penalty': -20.0, 'progress_reward': 1.5, 'step_penalty': 0.10000000000000009, 'eps_decay': 20000}
+该组合评分为：6.8480，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 3.6479250650108885e-05, 'batch_size': 256, 'cnn_all_dim': 256, 'cnn_local_dim': 16, 'layer_count': 4, 'base_size': 1024, 'size_decay': 0.6, 'gamma': 0.98, 'target_update': 100, 'food_reward': 22.0, 'death_penalty': -17.0, 'progress_reward': 1.5, 'step_penalty': 0.10000000000000009, 'eps_decay': 20000}
+该组合评分为：6.9770，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 4.441068734862306e-05, 'batch_size': 256, 'cnn_all_dim': 256, 'cnn_local_dim': 16, 'layer_count': 4, 'base_size': 1024, 'size_decay': 0.6, 'gamma': 0.982, 'target_update': 50, 'food_reward': 24.0, 'death_penalty': -19.0, 'progress_reward': 2.0, 'step_penalty': 0.10000000000000009, 'eps_decay': 10000}
+该组合评分为：7.0920，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 6.389048332377536e-05, 'batch_size': 256, 'cnn_all_dim': 256, 'cnn_local_dim': 16, 'layer_count': 4, 'base_size': 1024, 'size_decay': 0.6, 'gamma': 0.984, 'target_update': 150, 'food_reward': 12.0, 'death_penalty': -18.0, 'progress_reward': 1.0, 'step_penalty': 0.20000000000000007, 'eps_decay': 30000}
+该组合评分为：6.6450，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 3.712216507801441e-05, 'batch_size': 256, 'cnn_all_dim': 64, 'cnn_local_dim': 128, 'layer_count': 4, 'base_size': 1024, 'size_decay': 0.5, 'gamma': 0.962, 'target_update': 100, 'food_reward': 29.0, 'death_penalty': -21.0, 'progress_reward': 1.5, 'step_penalty': -0.09999999999999998, 'eps_decay': 50000}
+该组合评分为：6.5900，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 5.5339673694634306e-05, 'batch_size': 128, 'cnn_all_dim': 256, 'cnn_local_dim': 64, 'layer_count': 3, 'base_size': 512, 'size_decay': 0.7, 'gamma': 0.976, 'target_update': 150, 'food_reward': 17.0, 'death_penalty': -20.0, 'progress_reward': 2.5, 'step_penalty': 0.0, 'eps_decay': 20000}
+该组合评分为：6.5000，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 8.148959730469846e-05, 'batch_size': 512, 'cnn_all_dim': 128, 'cnn_local_dim': 16, 'layer_count': 2, 'base_size': 256, 'size_decay': 0.9, 'gamma': 0.982, 'target_update': 250, 'food_reward': 23.0, 'death_penalty': -22.0, 'progress_reward': 1.0, 'step_penalty': 0.10000000000000009, 'eps_decay': 30000}
+该组合评分为：6.7520，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 7.010223967939309e-05, 'batch_size': 256, 'cnn_all_dim': 64, 'cnn_local_dim': 32, 'layer_count': 5, 'base_size': 512, 'size_decay': 0.5, 'gamma': 0.974, 'target_update': 300, 'food_reward': 25.0, 'death_penalty': -13.0, 'progress_reward': 1.5, 'step_penalty': 0.4, 'eps_decay': 10000}
+该组合评分为：6.7980，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 0.00011593933757652797, 'batch_size': 128, 'cnn_all_dim': 256, 'cnn_local_dim': 64, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.6, 'gamma': 0.987, 'target_update': 450, 'food_reward': 21.0, 'death_penalty': -23.0, 'progress_reward': 1.0, 'step_penalty': 0.20000000000000007, 'eps_decay': 20000}
+该组合评分为：6.4900，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 9.612545147108365e-05, 'batch_size': 64, 'cnn_all_dim': 64, 'cnn_local_dim': 64, 'layer_count': 4, 'base_size': 128, 'size_decay': 0.8, 'gamma': 0.979, 'target_update': 200, 'food_reward': 26.0, 'death_penalty': -21.0, 'progress_reward': 2.0, 'step_penalty': 0.30000000000000004, 'eps_decay': 20000}
+该组合评分为：6.7680，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 4.677245894451328e-05, 'batch_size': 256, 'cnn_all_dim': 64, 'cnn_local_dim': 16, 'layer_count': 4, 'base_size': 512, 'size_decay': 0.6, 'gamma': 0.95, 'target_update': 250, 'food_reward': 24.0, 'death_penalty': -24.0, 'progress_reward': 1.0, 'step_penalty': 0.4, 'eps_decay': 20000}
+该组合评分为：6.8310，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 5.4977818240552454e-05, 'batch_size': 256, 'cnn_all_dim': 64, 'cnn_local_dim': 16, 'layer_count': 4, 'base_size': 512, 'size_decay': 0.6, 'gamma': 0.952, 'target_update': 250, 'food_reward': 24.0, 'death_penalty': -26.0, 'progress_reward': 0.5, 'step_penalty': 0.30000000000000004, 'eps_decay': 80000}
+该组合评分为：6.9620，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 4.313634659713115e-05, 'batch_size': 256, 'cnn_all_dim': 64, 'cnn_local_dim': 16, 'layer_count': 4, 'base_size': 512, 'size_decay': 0.6, 'gamma': 0.953, 'target_update': 300, 'food_reward': 27.0, 'death_penalty': -25.0, 'progress_reward': 1.0, 'step_penalty': 0.5, 'eps_decay': 20000}
+该组合评分为：6.7320，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 5.9375283723971495e-05, 'batch_size': 256, 'cnn_all_dim': 64, 'cnn_local_dim': 16, 'layer_count': 4, 'base_size': 512, 'size_decay': 0.6, 'gamma': 0.951, 'target_update': 200, 'food_reward': 25.0, 'death_penalty': -22.0, 'progress_reward': 1.5, 'step_penalty': 0.4, 'eps_decay': 70000}
+该组合评分为：6.7510，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 5.140075834594069e-05, 'batch_size': 32, 'cnn_all_dim': 128, 'cnn_local_dim': 16, 'layer_count': 4, 'base_size': 512, 'size_decay': 0.5, 'gamma': 0.957, 'target_update': 150, 'food_reward': 28.0, 'death_penalty': -23.0, 'progress_reward': 0.5, 'step_penalty': 0.20000000000000007, 'eps_decay': 90000}
+该组合评分为：6.5690，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 2.7584812535298134e-05, 'batch_size': 128, 'cnn_all_dim': 64, 'cnn_local_dim': 128, 'layer_count': 2, 'base_size': 512, 'size_decay': 0.6, 'gamma': 0.954, 'target_update': 100, 'food_reward': 23.0, 'death_penalty': -20.0, 'progress_reward': 1.0, 'step_penalty': 0.10000000000000009, 'eps_decay': 30000}
+该组合评分为：6.7100，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 0.00014820249171401535, 'batch_size': 256, 'cnn_all_dim': 32, 'cnn_local_dim': 64, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.5, 'gamma': 0.973, 'target_update': 250, 'food_reward': 22.0, 'death_penalty': -27.0, 'progress_reward': 1.5, 'step_penalty': 0.30000000000000004, 'eps_decay': 20000}
+该组合评分为：6.7040，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 4.009425488035721e-05, 'batch_size': 128, 'cnn_all_dim': 256, 'cnn_local_dim': 64, 'layer_count': 3, 'base_size': 1024, 'size_decay': 0.8, 'gamma': 0.977, 'target_update': 50, 'food_reward': 24.0, 'death_penalty': -26.0, 'progress_reward': 2.0, 'step_penalty': 0.4, 'eps_decay': 60000}
+该组合评分为：6.8140，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 0.0001068213642103239, 'batch_size': 64, 'cnn_all_dim': 64, 'cnn_local_dim': 16, 'layer_count': 4, 'base_size': 512, 'size_decay': 0.7, 'gamma': 0.988, 'target_update': 200, 'food_reward': 18.0, 'death_penalty': -25.0, 'progress_reward': 1.0, 'step_penalty': 0.10000000000000009, 'eps_decay': 10000}
+该组合评分为：6.8540，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 6.873253640257048e-05, 'batch_size': 128, 'cnn_all_dim': 128, 'cnn_local_dim': 64, 'layer_count': 2, 'base_size': 256, 'size_decay': 0.6, 'gamma': 0.968, 'target_update': 100, 'food_reward': 19.0, 'death_penalty': -21.0, 'progress_reward': 0.5, 'step_penalty': 0.20000000000000007, 'eps_decay': 40000}
+该组合评分为：6.6610，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 6.122781737832624e-05, 'batch_size': 128, 'cnn_all_dim': 256, 'cnn_local_dim': 64, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.6, 'gamma': 0.972, 'target_update': 450, 'food_reward': 23.0, 'death_penalty': -20.0, 'progress_reward': 1.0, 'step_penalty': 0.10000000000000009, 'eps_decay': 40000}
+该组合评分为：6.8430，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 4.9347459920392556e-05, 'batch_size': 128, 'cnn_all_dim': 256, 'cnn_local_dim': 64, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.6, 'gamma': 0.969, 'target_update': 450, 'food_reward': 22.0, 'death_penalty': -19.0, 'progress_reward': 1.0, 'step_penalty': 0.0, 'eps_decay': 30000}
+该组合评分为：6.7470，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 3.5611273932567305e-05, 'batch_size': 128, 'cnn_all_dim': 256, 'cnn_local_dim': 64, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.6, 'gamma': 0.966, 'target_update': 450, 'food_reward': 23.0, 'death_penalty': -21.0, 'progress_reward': 1.5, 'step_penalty': 0.10000000000000009, 'eps_decay': 20000}
+该组合评分为：6.5860，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 7.336305592980988e-05, 'batch_size': 128, 'cnn_all_dim': 256, 'cnn_local_dim': 64, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.5, 'gamma': 0.964, 'target_update': 400, 'food_reward': 21.0, 'death_penalty': -20.0, 'progress_reward': 1.0, 'step_penalty': 0.20000000000000007, 'eps_decay': 30000}
+该组合评分为：6.6100，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 8.007176340945636e-05, 'batch_size': 128, 'cnn_all_dim': 256, 'cnn_local_dim': 64, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.6, 'gamma': 0.971, 'target_update': 450, 'food_reward': 24.0, 'death_penalty': -18.0, 'progress_reward': 1.5, 'step_penalty': 0.10000000000000009, 'eps_decay': 50000}
+该组合评分为：6.6300，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 1.1287005951338283e-05, 'batch_size': 256, 'cnn_all_dim': 64, 'cnn_local_dim': 128, 'layer_count': 3, 'base_size': 128, 'size_decay': 0.5, 'gamma': 0.959, 'target_update': 500, 'food_reward': 23.0, 'death_penalty': -16.0, 'progress_reward': 0.5, 'step_penalty': 0.20000000000000007, 'eps_decay': 100000}
+该组合评分为：6.8420，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 3.159195651588498e-05, 'batch_size': 64, 'cnn_all_dim': 256, 'cnn_local_dim': 64, 'layer_count': 4, 'base_size': 512, 'size_decay': 0.7, 'gamma': 0.968, 'target_update': 150, 'food_reward': 22.0, 'death_penalty': -22.0, 'progress_reward': 1.0, 'step_penalty': 0.10000000000000009, 'eps_decay': 20000}
+该组合评分为：6.7560，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 9.250438889235152e-05, 'batch_size': 128, 'cnn_all_dim': 64, 'cnn_local_dim': 16, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.6, 'gamma': 0.97, 'target_update': 350, 'food_reward': 17.0, 'death_penalty': -19.0, 'progress_reward': 0.0, 'step_penalty': 0.0, 'eps_decay': 30000}
+该组合评分为：7.1110，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 4.5862437605023746e-05, 'batch_size': 512, 'cnn_all_dim': 128, 'cnn_local_dim': 64, 'layer_count': 2, 'base_size': 512, 'size_decay': 0.5, 'gamma': 0.985, 'target_update': 250, 'food_reward': 20.0, 'death_penalty': -17.0, 'progress_reward': 1.0, 'step_penalty': 0.10000000000000009, 'eps_decay': 90000}
+该组合评分为：6.9320，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 5.812439496185386e-05, 'batch_size': 128, 'cnn_all_dim': 256, 'cnn_local_dim': 32, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.5, 'gamma': 0.975, 'target_update': 200, 'food_reward': 21.0, 'death_penalty': -24.0, 'progress_reward': 0.5, 'step_penalty': 0.20000000000000007, 'eps_decay': 10000}
+该组合评分为：6.7690，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 0.00035783116434585943, 'batch_size': 512, 'cnn_all_dim': 256, 'cnn_local_dim': 32, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.8, 'gamma': 0.968, 'target_update': 400, 'food_reward': 18.0, 'death_penalty': -19.0, 'progress_reward': 2.0, 'step_penalty': -0.3, 'eps_decay': 10000}
+该组合评分为：6.8800，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 0.00019073520463815552, 'batch_size': 512, 'cnn_all_dim': 256, 'cnn_local_dim': 32, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.8, 'gamma': 0.965, 'target_update': 500, 'food_reward': 16.0, 'death_penalty': -21.0, 'progress_reward': 3.5, 'step_penalty': -0.09999999999999998, 'eps_decay': 20000}
+该组合评分为：6.9540，当前历史最高评分：7.4190
+当前超参数组合为：{'learning_rate': 0.0009758410089254328, 'batch_size': 512, 'cnn_all_dim': 256, 'cnn_local_dim': 32, 'layer_count': 3, 'base_size': 256, 'size_decay': 0.8, 'gamma': 0.961, 'target_update': 450, 'food_reward': 20.0, 'death_penalty': -23.0, 'progress_reward': 5.0, 'step_penalty': -0.5, 'eps_decay': 10000}
+该组合评分为：6.6450，当前历史最高评分：7.4190

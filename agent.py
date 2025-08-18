@@ -38,6 +38,10 @@ class DQNAgent:
         self.scores = []
         self.best_score = 0
         
+        # UCB探索参数
+        self.action_counts = np.zeros(Config.OUTPUT_DIM)
+        self.total_counts = 0
+        
         # 尝试加载模型
         self.policy_net.load()
         
@@ -45,23 +49,57 @@ class DQNAgent:
         self.policy_net.train()
     
     def select_action(self, state):
-        """选择动作（带numba加速的防自杀机制）"""
-        eps_threshold = Config.EPS_END + (Config.EPS_START - Config.EPS_END) * \
-                        np.exp(-1. * self.steps_done / Config.EPS_DECAY)
-        self.steps_done += 1
-        self.epsilon_threshold = eps_threshold
-
+        """选择动作（可选numba加速的防自杀机制）"""
+        # 使用UCB探索策略
+        with torch.no_grad():
+            state_tensor = torch.tensor(state, dtype=torch.float32).unsqueeze(0).to(Config.device)
+            q_values = self.policy_net(state_tensor).cpu().numpy().flatten()
+        
         # 获取当前状态的危险信息（前3个元素代表前方/右方/左方的危险）
         danger_signals = state[:3]
         
-        # ε-greedy策略
-        if np.random.random() > eps_threshold:
-            with torch.no_grad():
-                state_tensor = torch.tensor(state, dtype=torch.float32).unsqueeze(0).to(Config.device)
-                q_values = self.policy_net(state_tensor).cpu().numpy().flatten()
-                
-                # 使用numba加速的防自杀机制选择动作
-                action, danger_actions = safe_action_nb(
+        # 确保动作计数属性存在（兼容性检查）
+        if not hasattr(self, 'action_counts'):
+            self.action_counts = np.zeros(Config.OUTPUT_DIM)
+        if not hasattr(self, 'total_counts'):
+            self.total_counts = 0
+        
+        # UCB公式参数
+        c = 2.0  # 可调整的探索参数
+        
+        # 计算UCB值
+        ucb_values = np.zeros(Config.OUTPUT_DIM)
+        for i in range(Config.OUTPUT_DIM):
+            if self.action_counts[i] == 0:
+                # 如果动作从未被选择过，给它一个很高的UCB值以鼓励探索
+                ucb_values[i] = float('inf')
+            else:
+                # 标准UCB公式
+                average_reward = q_values[i]  # 这里简化处理，直接使用Q值作为平均奖励
+                exploration_term = c * np.sqrt(np.log(self.total_counts) / self.action_counts[i])
+                ucb_values[i] = average_reward + exploration_term
+        
+        # 选择UCB值最高的动作
+        action = np.argmax(ucb_values)
+        
+        # 更新动作计数
+        self.action_counts[action] += 1
+        self.total_counts += 1
+        self.steps_done += 1
+        
+        # 更新epsilon_threshold（兼容性保留）
+        # 在UCB策略中，我们用探索程度来表示，这里简化处理
+        if self.total_counts > 0:
+            self.epsilon_threshold = np.sum(self.action_counts > 0) / Config.OUTPUT_DIM
+        else:
+            self.epsilon_threshold = 1.0
+        
+        # 根据配置决定是否使用防自杀机制
+        if Config.ENABLE_SUICIDE_PREVENTION:
+            # 检查选定的动作是否危险
+            if danger_signals[action] > 0.5:  # 如果动作危险
+                # 使用numba加速的防自杀机制选择安全动作
+                safe_action, danger_actions = safe_action_nb(
                     q_values, 
                     danger_signals,
                     Config.COLLISION_PENALTY,
@@ -78,13 +116,9 @@ class DQNAgent:
                         True    # 标记为终止状态
                     )
                 
-                return action
-        else:
-            # 随机探索时也避免危险动作
-            safe_actions = [i for i in range(Config.OUTPUT_DIM) 
-                          if danger_signals[i] <= 0.5]
-            return (np.random.choice(safe_actions) if safe_actions 
-                   else np.random.randint(Config.OUTPUT_DIM))
+                return safe_action
+        
+        return action
 
     def optimize_model(self):
         """优化模型（采用优先级采样）"""
@@ -101,9 +135,12 @@ class DQNAgent:
         # 计算当前状态的Q值
         state_q_values = self.policy_net(states).gather(1, actions.unsqueeze(1))
         
-        # 计算下一个状态的最大Q值
+        # 计算下一个状态的最大Q值 (Double DQN)
         with torch.no_grad():
-            next_q_values = self.target_net(next_states).max(1)[0]
+            # 使用策略网络选择最优动作
+            next_actions = self.policy_net(next_states).max(1)[1]
+            # 使用目标网络评估这些动作的Q值
+            next_q_values = self.target_net(next_states).gather(1, next_actions.unsqueeze(1)).squeeze()
         
         # 计算期望Q值 (Bellman方程)
         expected_q_values = rewards + (1 - dones) * Config.GAMMA * next_q_values

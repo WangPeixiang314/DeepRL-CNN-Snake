@@ -92,6 +92,7 @@ def train(num_episodes=1000, visualize=True, verbose=True):
                 avg_loss = sum(episode_loss) / len(episode_loss) if episode_loss else 0
                 
                 # 记录统计数据
+                # epsilon_threshold在UCB策略中表示探索程度
                 stats.update(score, total_reward, episode_steps, avg_loss, 
                             agent.epsilon_threshold, td_errors)
                 
@@ -112,7 +113,7 @@ def train(num_episodes=1000, visualize=True, verbose=True):
                         if verbose:
                             print(f"局数: {agent.episode}, 分数: {score}, 平均分数: {stats.avg_scores[-1] if stats.avg_scores else 0:.2f}, "
                                   f"损失: {avg_loss:.4f}, TD误差: {td_error_mean:.4f}, "
-                                  f"时间/局: {time_per_episode:.2f}s, 经验池: {len(agent.memory)}")
+                                  f"时间/局: {time_per_episode:.2f}s, 经验池: {len(agent.memory)}, 探索率: {agent.epsilon_threshold:.4f} (UCB)")
         
         # 执行训练循环
         _run_training_loop()
