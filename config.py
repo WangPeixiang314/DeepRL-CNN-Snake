@@ -76,7 +76,7 @@ class Config:
     EPS_END = 0.02
     
     # UCB探索参数
-    UCB_C = 2.0  # UCB探索系数，控制探索与利用的平衡
+    UCB_C = 1.0  # UCB探索系数，控制探索与利用的平衡（降低探索强度）
     
     # 奖励参数
     FOOD_REWARD = 20.0

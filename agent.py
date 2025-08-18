@@ -60,9 +60,8 @@ class DQNAgent:
         # 获取当前状态的危险信息（前3个元素代表前方/右方/左方的危险）
         danger_signals = state[:3]
         
-        
-        # 计算UCB值
-        ucb_scores = self._calculate_ucb_scores()
+        # 计算UCB值（结合Q值和实际奖励）
+        ucb_scores = self._calculate_ucb_scores_with_q(q_values)
         
         # 获取候选动作（按UCB分数排序）
         candidate_actions = np.argsort(ucb_scores)[::-1]
@@ -109,29 +108,36 @@ class DQNAgent:
         
         return selected_action
     
-    def _calculate_ucb_scores(self):
+    def _calculate_ucb_scores_with_q(self, q_values):
         """计算修正的UCB分数（结合Q值估计和实际奖励 + UCB探索）"""
         ucb_scores = np.zeros(Config.OUTPUT_DIM)
         
-        # 获取当前状态的Q值
-        with torch.no_grad():
-            # 这里需要一个虚拟状态，实际上我们应该从调用者传入Q值
-            # 暂时使用Q网络的估计作为基础
-            pass
+        # 标准化Q值到合理范围（-1到1之间）
+        q_min, q_max = np.min(q_values), np.max(q_values)
+        if q_max - q_min > 0.001:  # 添加小阈值避免除零
+            normalized_q = 2 * (q_values - q_min) / (q_max - q_min) - 1
+        else:
+            normalized_q = np.zeros_like(q_values)
+        
+        # 奖励标准化范围
+        reward_range = Config.FOOD_REWARD - Config.COLLISION_PENALTY
         
         for action in range(Config.OUTPUT_DIM):
             if self.action_counts[action] == 0:
-                # 从未尝试过的动作给予最高优先级
-                ucb_scores[action] = float('inf')
+                # 从未尝试过的动作给予适度优先级，结合Q值引导
+                ucb_scores[action] = 5.0 + normalized_q[action] * 2.0
             else:
-                # 结合Q值估计和实际获得的平均奖励 + UCB探索奖励
-                q_value_bonus = 0  # 将在select_action中结合
-                avg_reward = self.action_values[action]
+                # 标准化奖励到[-1, 1]范围
+                normalized_reward = self.action_values[action] / max(reward_range, 1.0)
+                
+                # 结合Q值估计、标准化奖励和UCB探索奖励
+                q_value_bonus = normalized_q[action] * 0.8  # 增加Q值权重
                 ucb_bonus = self.ucb_c * np.sqrt(
-                    np.log(self.total_counts + 1) / self.action_counts[action]
-                )
-                # 使用实际奖励和UCB探索的加权和
-                ucb_scores[action] = avg_reward + ucb_bonus
+                    np.log(self.total_counts + 1) / (self.action_counts[action] + 1e-6)
+                ) * 0.5  # 降低探索权重
+                
+                # 使用标准化奖励、Q值估计和UCB探索的加权和
+                ucb_scores[action] = normalized_reward + q_value_bonus + ucb_bonus
         
         return ucb_scores
 
@@ -206,15 +212,8 @@ class DQNAgent:
             self.policy_net.save("snake_dqn_best.pth")
     
     def record_score(self, score, episode_reward=0):
-        """记录分数和UCB奖励"""
+        """记录分数"""
         self.scores.append(score)
-        
-        # 更新UCB奖励统计（使用episode_reward更新动作价值）
-        if hasattr(self, 'last_actions') and self.last_actions:
-            for action in self.last_actions:
-                self.action_rewards[action] += episode_reward / len(self.last_actions)
-                if self.action_counts[action] > 0:
-                    self.action_values[action] = self.action_rewards[action] / self.action_counts[action]
         
         # 更新最高分
         if score > self.best_score:
@@ -231,6 +230,18 @@ class DQNAgent:
             self.update_target_net()
             print("目标网络已更新")
         
+        # 定期重置UCB统计（避免早期负面经验长期影响）
+        if self.episode % 50 == 0 and self.episode > 0:
+            self.reset_ucb_stats()
+            print("UCB统计已重置")
+        
         # 重置每轮的动作记录
-        self.last_actions = []
+        if hasattr(self, 'last_actions'):
+            self.last_actions = []
         self.episode += 1
+        
+    def update_ucb_reward(self, action, reward):
+        """基于具体动作和奖励更新UCB统计"""
+        self.action_rewards[action] += reward
+        if self.action_counts[action] > 0:
+            self.action_values[action] = self.action_rewards[action] / self.action_counts[action]

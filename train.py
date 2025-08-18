@@ -76,6 +76,9 @@ def train(num_episodes=1000, visualize=True, verbose=True):
                     # 保存经验
                     agent.memory.add(state, action, reward, next_state, done)
                     
+                    # 更新UCB奖励统计（基于实际获得的奖励）
+                    agent.update_ucb_reward(action, reward)
+                    
                     # 移动到下一个状态
                     state = next_state
                     total_reward += reward
