@@ -74,7 +74,6 @@ class Config:
     # 探索参数
     EPS_START = 1.0
     EPS_END = 0.02
-    EPS_DECAY = 80000  # ε衰减步数 (增加以延长探索)
     
     # 奖励参数
     FOOD_REWARD = 20.0

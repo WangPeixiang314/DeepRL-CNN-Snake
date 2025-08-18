@@ -101,6 +101,7 @@ class TrainingPlotter:
         self.axs[1, 1].set_title('训练指标')
         self.axs[1, 1].set_xlabel('局数')
         self.axs[1, 1].set_ylabel('值')
+        self.axs[1, 1].set_yscale('log')  # 设置y轴为对数坐标
         self.axs[1, 1].legend()
         self.axs[1, 1].grid(True, alpha=0.3)
         

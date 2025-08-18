@@ -45,9 +45,6 @@ def objective(trial):
     progress_reward = trial.suggest_float('progress_reward', 0.0, 5.0, step=0.5)
     step_penalty = trial.suggest_float('step_penalty', -0.5, 0.5, step=0.1)
     
-    # 7. 探索参数
-    eps_decay = trial.suggest_int('eps_decay', 10_000, 100_000, step=10_000)
-    
     # 将超参数设置到Config类中
     Config.LEARNING_RATE = learning_rate
     Config.BATCH_SIZE = batch_size
@@ -60,7 +57,6 @@ def objective(trial):
     Config.COLLISION_PENALTY = death_penalty
     Config.PROGRESS_REWARD = progress_reward
     Config.STEP_PENALTY = step_penalty
-    Config.EPS_DECAY = eps_decay
     
     # 使用多进程并行训练并返回平均分数
     parallel = 5
@@ -122,8 +118,7 @@ def load_initial_trials(file_path):
                         distributions[param_name] = CategoricalDistribution([128, 256, 512, 1024])
                     elif param_name == 'target_update':
                         distributions[param_name] = IntDistribution(50, 500)
-                    elif param_name == 'eps_decay':
-                        distributions[param_name] = IntDistribution(10_000, 100_000)
+
                     elif param_name == 'cnn_all_dim':
                         distributions[param_name] = CategoricalDistribution([32, 64, 128, 256])
                     elif param_name == 'cnn_local_dim':
