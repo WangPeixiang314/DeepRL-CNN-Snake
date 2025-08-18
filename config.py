@@ -8,7 +8,7 @@ class Config:
     # 网格参数
     GRID_WIDTH = 12   # 地图网格宽度（单位：格）
     GRID_HEIGHT = 12  # 地图网格高度（单位：格）
-    LOCAL_VIEW_SIZE = 6  # 局部视野大小（边长，必须是偶数）
+    LOCAL_VIEW_SIZE = 8  # 局部视野大小（边长，必须是偶数）
     BLOCK_SIZE = 40   # 每个网格块的像素大小
     WIDTH = GRID_WIDTH * BLOCK_SIZE
     HEIGHT = GRID_HEIGHT * BLOCK_SIZE
@@ -17,8 +17,8 @@ class Config:
     SPEED = 600
     
     # 模型参数
-    MLP_LAYER_COUNT = 3
-    MLP_BASE_SIZE = 512
+    MLP_LAYER_COUNT = 7
+    MLP_BASE_SIZE = 1024
     MLP_SIZE_DECAY = 0.8
     
     @staticmethod
@@ -30,7 +30,7 @@ class Config:
     OUTPUT_DIM = 3  # 输出层大小 [直行, 右转, 左转]
     
     # CNN网络参数 - 全局地图CNN
-    CNN_ALL_GRID_OUTPUT_DIM = 128  # 全局CNN输出特征维度
+    CNN_ALL_GRID_OUTPUT_DIM = 256  # 全局CNN输出特征维度
     CNN_ALL_GRID_CONFIG = {
         'input_channels': 3,    # 输入通道数 [蛇身, 食物, 蛇头]
         'conv_layers': [16, 32, 64],  # 每层卷积核数量（支持任意层数）
@@ -45,7 +45,7 @@ class Config:
     }
     
     # CNN网络参数 - 局部视野CNN
-    CNN_LOCAL_OUTPUT_DIM = 64  # 局部CNN输出特征维度
+    CNN_LOCAL_OUTPUT_DIM = 128  # 局部CNN输出特征维度
     CNN_LOCAL_CONFIG = {
         'input_channels': 3,    # 输入通道数 [蛇身, 食物, 蛇头]
         'conv_layers': [8, 16, 32],  # 每层卷积核数量（支持任意层数）
@@ -58,10 +58,10 @@ class Config:
     }
     
     # 训练参数
-    BATCH_SIZE = 128
+    BATCH_SIZE = 256
     MEMORY_CAPACITY = 4000_000
-    LEARNING_RATE = 0.00010406
-    GAMMA = 0.984
+    LEARNING_RATE = 0.00001
+    GAMMA = 0.995
     TARGET_UPDATE = 100  # 更新目标网络的间隔
     MAX_STEPS_WITHOUT_FOOD = 500  # 最大无食物步数
     
@@ -75,10 +75,13 @@ class Config:
     EPS_START = 1.0
     EPS_END = 0.02
     
+    # UCB探索参数
+    UCB_C = 2.0  # UCB探索系数，控制探索与利用的平衡
+    
     # 奖励参数
     FOOD_REWARD = 20.0
     COLLISION_PENALTY = -25.0
-    STEP_PENALTY = 0.2
+    STEP_PENALTY = -0.5
     PROGRESS_REWARD = 1.5  # 向食物靠近的奖励
     
     # 防自杀功能
@@ -90,7 +93,7 @@ class Config:
     LOG_FILE = 'training_log.csv'
     
     # 绘图参数
-    PLOT_INTERVAL = 2  # 每N局游戏更新绘图 
+    PLOT_INTERVAL = 3  # 每N局游戏更新绘图 
     
     @staticmethod
     def init():

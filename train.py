@@ -96,8 +96,8 @@ def train(num_episodes=1000, visualize=True, verbose=True):
                 stats.update(score, total_reward, episode_steps, avg_loss, 
                             agent.epsilon_threshold, td_errors)
                 
-                # 记录结果
-                agent.record_score(score)
+                # 记录结果（包含总奖励用于UCB更新）
+                agent.record_score(score, total_reward)
                 
                 # 定期更新图表
                 if agent.episode % Config.PLOT_INTERVAL == 0:
