@@ -115,12 +115,26 @@ def step_logic_py(
     
     # 4. 检查吃到食物
     elif new_head == food:
-        new_score = score + 1
+        # 根据蛇的长度动态计算得分
+        snake_length = len(new_snake)
+        # 假设基础得分为1，每增加一个单位长度，得分增加0.5
+        dynamic_score = 1 + (snake_length - 3) * 0.5  # 初始长度为3
+        new_score = score + dynamic_score
+        
         new_food = place_food_py(new_snake, width, height, BLOCK_SIZE)
-        new_steps_since_food = 0
-        reward = FOOD_REWARD
-        new_prev_distance = distance_py(new_head, new_food)
-        done = False
+        # 检查是否游戏胜利（无法放置新食物）
+        if new_food == (-1, -1):
+            new_steps_since_food = 0
+            # 满分奖励：基础食物奖励 + 动态得分 + 额外奖励
+            reward = FOOD_REWARD + dynamic_score + 1000  # 游戏胜利额外奖励
+            new_prev_distance = 0
+            done = True  # 游戏胜利
+        else:
+            new_steps_since_food = 0
+            # 奖励也使用动态得分
+            reward = FOOD_REWARD + dynamic_score
+            new_prev_distance = distance_py(new_head, new_food)
+            done = False
     else:
         new_snake.pop()
         new_steps_since_food = steps_since_food + 1

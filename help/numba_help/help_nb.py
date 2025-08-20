@@ -1,6 +1,7 @@
 import numba
 import numpy as np
 from pygame import fastevent
+from collections import deque
 
 njit_decorator = numba.njit(fastmath=True, cache=True, inline='always', looplift=True, error_model='numpy')
 
@@ -38,12 +39,92 @@ def random_position_nb(width, height, BLOCK_SIZE):
     )
 
 @njit_decorator
+def is_reachable_inner_nb(snake, width, height, BLOCK_SIZE, start, target):
+    """使用BFS检查从起点到目标点是否可达（numba优化版本）"""
+    # 创建访问标记数组
+    visited = np.zeros((height // BLOCK_SIZE, width // BLOCK_SIZE), dtype=numba.boolean)
+    
+    # 标记蛇身占据的位置
+    for segment in snake:
+        x, y = segment[0] // BLOCK_SIZE, segment[1] // BLOCK_SIZE
+        if 0 <= x < visited.shape[1] and 0 <= y < visited.shape[0]:
+            visited[y, x] = True
+    
+    # BFS队列（使用固定大小的数组模拟）
+    queue = np.zeros((width * height, 2), dtype=np.int64)
+    queue_start = 0
+    queue_end = 0
+    
+    # 添加起点到队列
+    queue[queue_end, 0] = start[0]
+    queue[queue_end, 1] = start[1]
+    queue_end += 1
+    visited[start[1], start[0]] = True
+    
+    # 四个方向：右、下、左、上
+    directions = np.array([[1, 0], [0, 1], [-1, 0], [0, -1]], dtype=np.int64)
+    
+    while queue_start < queue_end:
+        current_x = queue[queue_start, 0]
+        current_y = queue[queue_start, 1]
+        queue_start += 1
+        
+        # 检查是否到达目标
+        if current_x == target[0] and current_y == target[1]:
+            return True
+        
+        # 检查四个方向
+        for i in range(4):
+            next_x = current_x + directions[i, 0]
+            next_y = current_y + directions[i, 1]
+            
+            # 检查边界
+            if (0 <= next_x < width // BLOCK_SIZE and 
+                0 <= next_y < height // BLOCK_SIZE and 
+                not visited[next_y, next_x]):
+                
+                # 检查是否与蛇身碰撞
+                is_collision = False
+                for j in range(1, len(snake)):  # 不检查蛇头
+                    seg_x, seg_y = snake[j][0] // BLOCK_SIZE, snake[j][1] // BLOCK_SIZE
+                    if seg_x == next_x and seg_y == next_y:
+                        is_collision = True
+                        break
+                
+                if not is_collision:
+                    visited[next_y, next_x] = True
+                    queue[queue_end, 0] = next_x
+                    queue[queue_end, 1] = next_y
+                    queue_end += 1
+    
+    return False
+
+@njit_decorator
 def place_food_nb(snake, width, height, BLOCK_SIZE):
-    """放置食物，避开蛇身"""
-    while True:
+    """放置食物，避开蛇身并确保在可达区域内"""
+    # 计算网格总数
+    grid_count = (width // BLOCK_SIZE) * (height // BLOCK_SIZE)
+    
+    # 如果蛇身已经填满整个地图，返回特殊值(-1, -1)表示游戏胜利
+    if len(snake) >= grid_count:
+        return (-1, -1)
+    
+    # 尝试有限次数寻找空位
+    max_attempts = 1000  # 增加尝试次数以提高找到可达位置的概率
+    for _ in range(max_attempts):
         food = random_position_nb(width, height, BLOCK_SIZE)
         if food not in snake:
-            return food
+            # 检查食物是否可达
+            head = snake[0]
+            head_grid = (head[0] // BLOCK_SIZE, head[1] // BLOCK_SIZE)
+            food_grid = (food[0] // BLOCK_SIZE, food[1] // BLOCK_SIZE)
+            
+            # 如果可达，返回食物位置
+            if is_reachable_inner_nb(snake, width, height, BLOCK_SIZE, head_grid, food_grid):
+                return food
+    
+    # 如果尝试多次仍未找到可达的空位，返回特殊值
+    return (-1, -1)
 
 @njit_decorator
 def update_direction_nb(current_dir, action):
@@ -92,7 +173,9 @@ def step_logic_nb(
     FOOD_REWARD,
     COLLISION_PENALTY,
     PROGRESS_REWARD,
-    STEP_PENALTY
+    STEP_PENALTY,
+    WIN_REWARD,
+    LENGTH_REWARD_COEFFICIENT
 ):
     """
     游戏逻辑核心部分 (numba加速)
@@ -119,12 +202,28 @@ def step_logic_nb(
     
     # 4. 检查吃到食物
     elif new_head == food:
-        new_score = score + 1
+        # 计算当前蛇的长度
+        current_snake_length = len(new_snake)
+        max_possible_length = (width // BLOCK_SIZE) * (height // BLOCK_SIZE)
+        
         new_food = place_food_nb(new_snake, width, height, BLOCK_SIZE)
-        new_steps_since_food = 0
-        reward = FOOD_REWARD
-        new_prev_distance = distance_nb(new_head, new_food)
-        done = False
+        # 检查是否游戏胜利（无法放置新食物或达到最大长度）
+        if new_food == (-1, -1) or current_snake_length >= max_possible_length - 1:
+            new_steps_since_food = 0
+            # 满分奖励：基础食物奖励 + 动态长度奖励 + 游戏胜利额外奖励
+            dynamic_food_reward = FOOD_REWARD + LENGTH_REWARD_COEFFICIENT * current_snake_length
+            reward = dynamic_food_reward + WIN_REWARD
+            new_score = score + dynamic_food_reward + WIN_REWARD  # 更新分数
+            new_prev_distance = 0
+            done = True  # 游戏胜利
+        else:
+            new_steps_since_food = 0
+            # 动态食物奖励：基础奖励 + k * 当前蛇长度
+            dynamic_food_reward = FOOD_REWARD + LENGTH_REWARD_COEFFICIENT * current_snake_length
+            reward = dynamic_food_reward
+            new_score = score + dynamic_food_reward  # 更新分数
+            new_prev_distance = distance_nb(new_head, new_food)
+            done = False
     else:
         new_snake.pop()
         new_steps_since_food = steps_since_food + 1
@@ -201,9 +300,112 @@ def batch_retrieve_par_nb(tree, capacity, s_values):
     return indices
 
 @njit_decorator
+def check_unreachable_area_nb(snake, head, direction_vec, food, width, height, BLOCK_SIZE, action):
+    """
+    检查给定动作是否会导致蛇头进入不可达区域（使用BFS）
+    
+    参数:
+        snake: 当前蛇身位置列表
+        head: 蛇头位置
+        direction_vec: 当前方向向量
+        food: 食物位置
+        width, height: 游戏区域尺寸
+        BLOCK_SIZE: 网格块大小
+        action: 要检查的动作 (0:直行, 1:右转, 2:左转)
+        
+    返回:
+        is_unreachable: 是否会导致进入不可达区域
+    """
+    # 计算新方向
+    new_direction_vec = update_direction_nb(direction_vec, action)
+    
+    # 计算新蛇头位置
+    dx, dy = new_direction_vec
+    new_head = (head[0] + dx * BLOCK_SIZE, head[1] + dy * BLOCK_SIZE)
+    
+    # 检查边界碰撞
+    if (new_head[0] < 0 or new_head[0] >= width or 
+        new_head[1] < 0 or new_head[1] >= height):
+        return True  # 边界外视为不可达
+    
+    # 检查是否会立即碰撞
+    for segment in snake[1:]:  # 不检查蛇头自身
+        if segment[0] == new_head[0] and segment[1] == new_head[1]:
+            return True  # 会碰撞视为不可达
+    
+    # 创建新的蛇位置（模拟移动后）
+    new_snake = snake.copy()
+    new_snake.insert(0, new_head)
+    
+    # 如果吃到食物，蛇不会缩短；否则会缩短
+    if new_head != food:
+        new_snake.pop()
+    
+    # 将位置转换为网格坐标
+    food_grid = (food[0] // BLOCK_SIZE, food[1] // BLOCK_SIZE)
+    new_head_grid = (new_head[0] // BLOCK_SIZE, new_head[1] // BLOCK_SIZE)
+    
+    # 使用BFS检查食物是否可达
+    return not is_reachable_inner_nb(new_snake, width, height, BLOCK_SIZE, new_head_grid, food_grid)
+
+@njit_decorator
+def enhanced_safe_action_nb(q_values, danger_signals, collision_penalty, state, snake, head, direction_vec, food, width, height, BLOCK_SIZE):
+    """
+    增强防自杀机制（结合BFS不可达区域检测）
+    
+    参数:
+        q_values: 原始Q值数组 (3个动作)
+        danger_signals: 危险信号数组 (3个方向)
+        collision_penalty: 碰撞惩罚值
+        state: 当前状态向量
+        snake: 当前蛇身位置列表
+        head: 蛇头位置
+        direction_vec: 当前方向向量
+        food: 食物位置
+        width, height: 游戏区域尺寸
+        BLOCK_SIZE: 网格块大小
+        
+    返回:
+        action: 选择的动作
+        danger_actions: 危险动作列表
+    """
+    # 创建安全动作掩码
+    safe_mask = np.ones_like(q_values, dtype=np.bool_)
+    danger_actions = []
+    
+    # 标记危险动作（基于碰撞检测）
+    for i in range(len(danger_signals)):
+        if danger_signals[i] > 0.5:
+            safe_mask[i] = False
+            danger_actions.append(i)
+    
+    # 检查BFS不可达区域
+    for action_idx in range(len(q_values)):
+        if safe_mask[action_idx]:  # 只对非碰撞危险的动作检查
+            is_unreachable = check_unreachable_area_nb(
+                snake, head, direction_vec, food, width, height, BLOCK_SIZE, action_idx
+            )
+            if is_unreachable:
+                safe_mask[action_idx] = False
+                danger_actions.append(action_idx)
+    
+    # 创建安全Q值数组
+    safe_q_values = q_values.copy()
+    safe_q_values[~safe_mask] = -np.inf
+    
+    # 选择安全动作中Q值最高的
+    if np.all(~safe_mask):
+        # 所有动作都危险时选择原始Q值最高的
+        action = np.argmax(q_values)
+    else:
+        action = np.argmax(safe_q_values)
+    
+    return action, danger_actions
+
+@njit_decorator
 def safe_action_nb(q_values, danger_signals, collision_penalty, state):
     """
-    防自杀机制的核心逻辑 (numba加速)
+    增强防自杀机制（结合BFS不可达区域检测）
     
     参数:
         q_values: 原始Q值数组 (3个动作)

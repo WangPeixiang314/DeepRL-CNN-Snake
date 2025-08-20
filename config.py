@@ -9,8 +9,8 @@ class Config:
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     # 网格参数
-    GRID_WIDTH = 6   # 地图网格宽度（单位：格）
-    GRID_HEIGHT = 6  # 地图网格高度（单位：格）
+    GRID_WIDTH = 12   # 地图网格宽度（单位：格）
+    GRID_HEIGHT = 12  # 地图网格高度（单位：格）
     LOCAL_VIEW_SIZE = 8  # 局部视野大小（边长，必须是偶数）
     BLOCK_SIZE = 40   # 每个网格块的像素大小
     WIDTH = GRID_WIDTH * BLOCK_SIZE
@@ -83,13 +83,15 @@ class Config:
     EPS_END = 0.001        # 最小探索率
     
     # 训练总轮数（用于指数衰减探索率）
-    MAX_EPISODES = 500
+    MAX_EPISODES = 1000
     
     # 奖励参数
     FOOD_REWARD = 20.0
     COLLISION_PENALTY = -500.0
     STEP_PENALTY = 0.1
     PROGRESS_REWARD = 0.5  # 向食物靠近的奖励
+    WIN_REWARD = 200.0  # 游戏胜利额外奖励
+    LENGTH_REWARD_COEFFICIENT = 0.5  # 动态得分系数k，食物奖励 = FOOD_REWARD + k * 当前蛇长度
     
     # 防自杀功能
     ENABLE_SUICIDE_PREVENTION = True  # 是否启用防自杀机制

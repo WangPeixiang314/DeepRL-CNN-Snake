@@ -161,7 +161,9 @@ class SnakeGame:
             Config.FOOD_REWARD,
             Config.COLLISION_PENALTY,
             Config.PROGRESS_REWARD,
-            Config.STEP_PENALTY
+            Config.STEP_PENALTY,
+            Config.WIN_REWARD,
+            Config.LENGTH_REWARD_COEFFICIENT
         )
         
         # 3. 更新方向枚举
@@ -176,9 +178,9 @@ class SnakeGame:
         # 6. 渲染游戏
         self.render()
         
-        # 检查是否游戏胜利
-        if done and self.score >= Config.GRID_WIDTH * Config.GRID_HEIGHT - 3:  # 初始蛇身长度为3
-            print(f"恭喜！游戏胜利！最终分数: {self.score}")
+        # 检查是否游戏胜利（基于蛇的实际长度，而非分数）
+        if done and len(self.snake) >= Config.GRID_WIDTH * Config.GRID_HEIGHT - 3:  # 初始蛇身长度为3
+            print(f"恭喜！游戏胜利！最终长度: {len(self.snake)}, 最终分数: {self.score}")
         
         return next_state, reward, done, self.score
 

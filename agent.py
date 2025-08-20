@@ -5,7 +5,7 @@ import torch.optim as optim
 
 from config import Config
 
-from help.numba_help.help_nb import safe_action_nb
+from help.numba_help.help_nb import safe_action_nb, enhanced_safe_action_nb
 
 
 from memory import PrioritizedReplayBuffer
@@ -67,8 +67,8 @@ class DQNAgent:
         # 确保epsilon不小于最小值
         return max(Config.EPS_END, epsilon)
 
-    def select_action(self, state):
-        """选择动作（使用指数衰减ε-贪婪策略）"""
+    def select_action(self, state, game=None):
+        """选择动作（使用指数衰减ε-贪婪策略，集成BFS不可达区域检测）"""
         # 使用指数衰减计算探索率（无周期性重启）
         self.epsilon_threshold = self._calculate_epsilon(self.episode)
         
@@ -87,12 +87,29 @@ class DQNAgent:
                 action = np.random.choice(safe_actions)
             else:
                 # 如果没有安全动作，使用防自杀机制
-                safe_action, _ = safe_action_nb(
-                    q_values, 
-                    danger_signals,
-                    Config.COLLISION_PENALTY,
-                    state
-                )
+                if Config.ENABLE_SUICIDE_PREVENTION and game is not None:
+                    # 使用增强版防自杀机制（包含BFS不可达区域检测）
+                    safe_action, _ = enhanced_safe_action_nb(
+                        q_values, 
+                        danger_signals,
+                        Config.COLLISION_PENALTY,
+                        state,
+                        game.snake,
+                        game.head,
+                        game.direction.value,
+                        game.food,
+                        game.width,
+                        game.height,
+                        Config.BLOCK_SIZE
+                    )
+                else:
+                    # 使用传统防自杀机制
+                    safe_action, _ = safe_action_nb(
+                        q_values, 
+                        danger_signals,
+                        Config.COLLISION_PENALTY,
+                        state
+                    )
                 action = safe_action
         else:
             # 利用：选择Q值最高的安全动作
@@ -105,12 +122,29 @@ class DQNAgent:
             
             # 如果所有动作都危险，使用防自杀机制
             if safe_q_values[action] == float('-inf'):
-                safe_action, _ = safe_action_nb(
-                    q_values, 
-                    danger_signals,
-                    Config.COLLISION_PENALTY,
-                    state
-                )
+                if Config.ENABLE_SUICIDE_PREVENTION and game is not None:
+                    # 使用增强版防自杀机制（包含BFS不可达区域检测）
+                    safe_action, _ = enhanced_safe_action_nb(
+                        q_values, 
+                        danger_signals,
+                        Config.COLLISION_PENALTY,
+                        state,
+                        game.snake,
+                        game.head,
+                        game.direction.value,
+                        game.food,
+                        game.width,
+                        game.height,
+                        Config.BLOCK_SIZE
+                    )
+                else:
+                    # 使用传统防自杀机制
+                    safe_action, _ = safe_action_nb(
+                        q_values, 
+                        danger_signals,
+                        Config.COLLISION_PENALTY,
+                        state
+                    )
                 action = safe_action
         
         self.steps_done += 1

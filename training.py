@@ -19,15 +19,17 @@ class TrainingStats:
         self.steps = []           # 每局步数
         self.losses = []          # 每局平均损失
         self.epsilons = []        # 每局探索率
+        self.final_lengths = []   # 每局最终蛇长度
         
         # 移动平均数据
         self.avg_scores = []      # 分数移动平均
         self.avg_rewards = []     # 奖励移动平均
         self.avg_steps = []       # 步数移动平均
         self.avg_losses = []      # 损失移动平均
+        self.avg_final_lengths = []  # 最终长度移动平均
         self.td_errors = []       # TD误差统计
     
-    def update(self, score, reward, steps, loss, epsilon, td_errors=None):
+    def update(self, score, reward, steps, loss, epsilon, final_length, td_errors=None):
         """更新统计数据"""
         # 记录当前局数据
         self.scores.append(score)
@@ -35,6 +37,7 @@ class TrainingStats:
         self.steps.append(steps)
         self.losses.append(loss)
         self.epsilons.append(epsilon)
+        self.final_lengths.append(final_length)
         
         # 记录TD误差统计
         if td_errors is not None and len(td_errors) > 0:
@@ -47,6 +50,7 @@ class TrainingStats:
             self.avg_rewards.append(np.mean(self.rewards[-window:]))
             self.avg_steps.append(np.mean(self.steps[-window:]))
             self.avg_losses.append(np.mean(self.losses[-window:]))
+            self.avg_final_lengths.append(np.mean(self.final_lengths[-window:]))
     
     def get_stats(self):
         """获取格式化统计数据"""
@@ -56,10 +60,12 @@ class TrainingStats:
             'steps': self.steps,
             'losses': self.losses,
             'epsilons': self.epsilons,
+            'final_lengths': self.final_lengths,
             'avg_scores': self.avg_scores,
             'avg_rewards': self.avg_rewards,
             'avg_steps': self.avg_steps,
-            'avg_losses': self.avg_losses
+            'avg_losses': self.avg_losses,
+            'avg_final_lengths': self.avg_final_lengths
         }
         
         if self.td_errors:
@@ -75,10 +81,10 @@ class TrainingPlotter:
         self.fig, self.axs = plt.subplots(2, 2, figsize=(12, 8))
         self.fig.suptitle('蛇游戏AI训练指标')
         
-        # 初始化空图表
-        self.score_line, = self.axs[0, 0].plot([], [], 'b-', label='分数')
-        self.avg_score_line, = self.axs[0, 0].plot([], [], 'r-', label=f'{n_mean}局平均')
-        self.axs[0, 0].set_title('每局最终长度')
+        # 初始化空图表 - 第一个子图显示最终长度而非分数
+        self.length_line, = self.axs[0, 0].plot([], [], 'b-', label='最终长度')
+        self.avg_length_line, = self.axs[0, 0].plot([], [], 'r-', label=f'最近{n_mean}局平均')
+        self.axs[0, 0].set_title('每局游戏最终长度')
         self.axs[0, 0].set_xlabel('局数')
         self.axs[0, 0].set_ylabel('长度')
         self.axs[0, 0].legend()
@@ -111,9 +117,9 @@ class TrainingPlotter:
         """更新图表数据"""
         episodes = list(range(len(stats['scores'])))
         
-        # 更新分数图表
-        self.score_line.set_data(episodes, stats['scores'])
-        self.avg_score_line.set_data(episodes, stats['avg_scores'])
+        # 更新最终长度图表（第一个子图）
+        self.length_line.set_data(episodes, stats['final_lengths'])
+        self.avg_length_line.set_data(episodes, stats['avg_final_lengths'])
         self.axs[0, 0].relim()
         self.axs[0, 0].autoscale_view()
         

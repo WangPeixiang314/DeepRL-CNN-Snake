@@ -88,8 +88,8 @@ def train(num_episodes=1000, visualize=True, verbose=True, pretrained_model=None
                 td_errors = []
                 
                 while not done:
-                    # 选择动作
-                    action = agent.select_action(state)
+                    # 选择动作（传入game实例以启用BFS不可达区域检测）
+                    action = agent.select_action(state, game=game)
                     
                     # 执行动作
                     next_state, reward, done, score = game.step(action)
@@ -119,8 +119,9 @@ def train(num_episodes=1000, visualize=True, verbose=True, pretrained_model=None
                 avg_loss = sum(episode_loss) / len(episode_loss) if episode_loss else 0
                 
                 # 记录统计数据
+                final_length = len(game.snake)  # 获取蛇的最终长度
                 stats.update(score, total_reward, episode_steps, avg_loss, 
-                            agent.epsilon_threshold, td_errors)
+                            agent.epsilon_threshold, final_length, td_errors)
                 
                 # 记录结果
                 agent.record_score(score, total_reward)
@@ -137,7 +138,7 @@ def train(num_episodes=1000, visualize=True, verbose=True, pretrained_model=None
                         # 打印当前TD误差统计
                         td_error_mean = np.mean(td_errors) if td_errors else 0
                         if verbose:
-                            print(f"局数: {agent.episode}, 分数: {score}, 平均分数: {stats.avg_scores[-1] if stats.avg_scores else 0:.2f}, "
+                            print(f"局数: {agent.episode}, 长度: {final_length}, 平均长度: {stats.avg_final_lengths[-1] if stats.avg_final_lengths else 0:.2f}, "
                                   f"损失: {avg_loss:.4f}, TD误差: {td_error_mean:.4f}, "
                                   f"时间/局: {time_per_episode:.2f}s, 经验池: {len(agent.memory)}, 探索率: {agent.epsilon_threshold:.4f}")
         
