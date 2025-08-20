@@ -38,12 +38,7 @@ class DQNAgent:
         self.scores = []
         self.best_score = 0
         
-        # UCB探索参数 - 修正实现
-        self.action_counts = np.zeros(Config.OUTPUT_DIM)
-        self.action_rewards = np.zeros(Config.OUTPUT_DIM)  # 存储每个动作的累计奖励
-        self.action_values = np.zeros(Config.OUTPUT_DIM)  # 存储每个动作的平均奖励
-        self.total_counts = 0
-        self.ucb_c = Config.UCB_C  # UCB探索系数
+
         
         # 尝试加载模型
         self.policy_net.load()
@@ -51,8 +46,33 @@ class DQNAgent:
         # 开启训练模式
         self.policy_net.train()
     
+    def _calculate_epsilon(self, episode):
+        """计算探索率的余弦退火策略
+        
+        Args:
+            episode: 当前局数
+            
+        Returns:
+            epsilon: 计算出的探索率
+        """
+        # 最普通的余弦退火epsilon贪婪策略
+        # epsilon = EPS_END + (EPS_START - EPS_END) * (1 + cos(pi * episode / max_episodes)) / 2
+        
+        # 使用Config中定义的最大训练轮数
+        max_episodes = Config.MAX_EPISODES
+        
+        # 余弦退火公式
+        cosine_arg = np.pi * episode / max_episodes
+        epsilon = Config.EPS_END + (Config.EPS_START - Config.EPS_END) * (1 + np.cos(cosine_arg)) / 2
+        
+        # 确保epsilon不小于最小值
+        return max(Config.EPS_END, epsilon)
+
     def select_action(self, state):
-        """选择动作（完整UCB探索策略 + 防自杀机制）"""
+        """选择动作（使用余弦退火ε-贪婪策略）"""
+        # 使用余弦退火计算探索率
+        self.epsilon_threshold = self._calculate_epsilon(self.episode)
+        
         with torch.no_grad():
             state_tensor = torch.tensor(state, dtype=torch.float32).unsqueeze(0).to(Config.device)
             q_values = self.policy_net(state_tensor).cpu().numpy().flatten()
@@ -60,87 +80,43 @@ class DQNAgent:
         # 获取当前状态的危险信息（前3个元素代表前方/右方/左方的危险）
         danger_signals = state[:3]
         
-        # 计算UCB值（结合Q值和实际奖励）
-        ucb_scores = self._calculate_ucb_scores_with_q(q_values)
-        
-        # 获取候选动作（按UCB分数排序）
-        candidate_actions = np.argsort(ucb_scores)[::-1]
-        
-        # 选择动作：优先选择UCB分数高且安全的动作
-        selected_action = None
-        for action in candidate_actions:
-            # 检查动作是否安全
-            is_safe = danger_signals[action] < 0.5
-            
-            if is_safe or not Config.ENABLE_SUICIDE_PREVENTION:
-                selected_action = action
-                break
-        
-        # 如果所有候选动作都危险，使用防自杀机制
-        if selected_action is None:
-            safe_action, danger_actions = safe_action_nb(
-                q_values, 
-                danger_signals,
-                Config.COLLISION_PENALTY,
-                state
-            )
-            selected_action = safe_action
-            
-            # 记录危险选择的惩罚（用于训练）
-            for action_idx in danger_actions:
-                self.memory.add(
-                    state, 
-                    action_idx, 
-                    Config.COLLISION_PENALTY * 0.5,
-                    state,
-                    True
-                )
-        
-        # 更新计数并记录动作
-        self.action_counts[selected_action] += 1
-        self.total_counts += 1
-        self.steps_done += 1
-        
-        # 记录选择的动作用于UCB奖励更新
-        if not hasattr(self, 'last_actions'):
-            self.last_actions = []
-        self.last_actions.append(selected_action)
-        
-        return selected_action
-    
-    def _calculate_ucb_scores_with_q(self, q_values):
-        """计算修正的UCB分数（结合Q值估计和实际奖励 + UCB探索）"""
-        ucb_scores = np.zeros(Config.OUTPUT_DIM)
-        
-        # 标准化Q值到合理范围（-1到1之间）
-        q_min, q_max = np.min(q_values), np.max(q_values)
-        if q_max - q_min > 0.001:  # 添加小阈值避免除零
-            normalized_q = 2 * (q_values - q_min) / (q_max - q_min) - 1
-        else:
-            normalized_q = np.zeros_like(q_values)
-        
-        # 奖励标准化范围
-        reward_range = Config.FOOD_REWARD - Config.COLLISION_PENALTY
-        
-        for action in range(Config.OUTPUT_DIM):
-            if self.action_counts[action] == 0:
-                # 从未尝试过的动作给予适度优先级，结合Q值引导
-                ucb_scores[action] = 5.0 + normalized_q[action] * 2.0
+        # ε-贪婪策略
+        if np.random.random() < self.epsilon_threshold:
+            # 探索：随机选择安全动作
+            safe_actions = [i for i, danger in enumerate(danger_signals) if danger < 0.5]
+            if safe_actions:
+                action = np.random.choice(safe_actions)
             else:
-                # 标准化奖励到[-1, 1]范围
-                normalized_reward = self.action_values[action] / max(reward_range, 1.0)
-                
-                # 结合Q值估计、标准化奖励和UCB探索奖励
-                q_value_bonus = normalized_q[action] * 0.8  # 增加Q值权重
-                ucb_bonus = self.ucb_c * np.sqrt(
-                    np.log(self.total_counts + 1) / (self.action_counts[action] + 1e-6)
-                ) * 0.5  # 降低探索权重
-                
-                # 使用标准化奖励、Q值估计和UCB探索的加权和
-                ucb_scores[action] = normalized_reward + q_value_bonus + ucb_bonus
+                # 如果没有安全动作，使用防自杀机制
+                safe_action, _ = safe_action_nb(
+                    q_values, 
+                    danger_signals,
+                    Config.COLLISION_PENALTY,
+                    state
+                )
+                action = safe_action
+        else:
+            # 利用：选择Q值最高的安全动作
+            safe_q_values = q_values.copy()
+            for i, danger in enumerate(danger_signals):
+                if danger >= 0.5 and Config.ENABLE_SUICIDE_PREVENTION:
+                    safe_q_values[i] = float('-inf')
+            
+            action = np.argmax(safe_q_values)
+            
+            # 如果所有动作都危险，使用防自杀机制
+            if safe_q_values[action] == float('-inf'):
+                safe_action, _ = safe_action_nb(
+                    q_values, 
+                    danger_signals,
+                    Config.COLLISION_PENALTY,
+                    state
+                )
+                action = safe_action
         
-        return ucb_scores
-
+        self.steps_done += 1
+        return action
+    
     def optimize_model(self):
         """优化模型（采用优先级采样）"""
         if len(self.memory) < Config.BATCH_SIZE:
@@ -192,14 +168,7 @@ class DQNAgent:
     def update_target_net(self):
         """更新目标网络"""
         self.target_net.load_state_dict(self.policy_net.state_dict())
-    
-    def reset_ucb_stats(self):
-        """重置UCB统计信息"""
-        self.action_counts = np.zeros(Config.OUTPUT_DIM)
-        self.action_rewards = np.zeros(Config.OUTPUT_DIM)
-        self.action_values = np.zeros(Config.OUTPUT_DIM)
-        self.total_counts = 0
-    
+
     def save_model(self, is_best=False):
         """保存模型"""
         suffix = f"_best_{self.best_score}.pth" if is_best else ".pth"
@@ -230,18 +199,7 @@ class DQNAgent:
             self.update_target_net()
             print("目标网络已更新")
         
-        # 定期重置UCB统计（避免早期负面经验长期影响）
-        if self.episode % 50 == 0 and self.episode > 0:
-            self.reset_ucb_stats()
-            print("UCB统计已重置")
-        
         # 重置每轮的动作记录
         if hasattr(self, 'last_actions'):
             self.last_actions = []
         self.episode += 1
-        
-    def update_ucb_reward(self, action, reward):
-        """基于具体动作和奖励更新UCB统计"""
-        self.action_rewards[action] += reward
-        if self.action_counts[action] > 0:
-            self.action_values[action] = self.action_rewards[action] / self.action_counts[action]

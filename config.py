@@ -19,7 +19,7 @@ class Config:
     # 模型参数
     MLP_LAYER_COUNT = 7
     MLP_BASE_SIZE = 1024
-    MLP_SIZE_DECAY = 0.8
+    MLP_SIZE_DECAY = 0.5
     
     @staticmethod
     def _generate_hidden_layers(layer_count, base_size, size_decay):
@@ -30,7 +30,7 @@ class Config:
     OUTPUT_DIM = 3  # 输出层大小 [直行, 右转, 左转]
     
     # CNN网络参数 - 全局地图CNN
-    CNN_ALL_GRID_OUTPUT_DIM = 256  # 全局CNN输出特征维度
+    CNN_ALL_GRID_OUTPUT_DIM = 128  # 全局CNN输出特征维度
     CNN_ALL_GRID_CONFIG = {
         'input_channels': 3,    # 输入通道数 [蛇身, 食物, 蛇头]
         'conv_layers': [16, 32, 64],  # 每层卷积核数量（支持任意层数）
@@ -45,7 +45,7 @@ class Config:
     }
     
     # CNN网络参数 - 局部视野CNN
-    CNN_LOCAL_OUTPUT_DIM = 128  # 局部CNN输出特征维度
+    CNN_LOCAL_OUTPUT_DIM = 64  # 局部CNN输出特征维度
     CNN_LOCAL_CONFIG = {
         'input_channels': 3,    # 输入通道数 [蛇身, 食物, 蛇头]
         'conv_layers': [8, 16, 32],  # 每层卷积核数量（支持任意层数）
@@ -59,11 +59,11 @@ class Config:
     
     # 训练参数
     BATCH_SIZE = 256
-    MEMORY_CAPACITY = 4000_000
-    LEARNING_RATE = 0.00001
+    MEMORY_CAPACITY = 8000_000
+    LEARNING_RATE = 0.0005
     GAMMA = 0.995
     TARGET_UPDATE = 100  # 更新目标网络的间隔
-    MAX_STEPS_WITHOUT_FOOD = 500  # 最大无食物步数
+    MAX_STEPS_WITHOUT_FOOD = 1000  # 最大无食物步数
     
     # 优先级采样参数
     PRIO_ALPHA = 0.6  # 控制采样的随机性程度 (0~1)
@@ -75,14 +75,18 @@ class Config:
     EPS_START = 1.0
     EPS_END = 0.02
     
-    # UCB探索参数
-    UCB_C = 1.0  # UCB探索系数，控制探索与利用的平衡（降低探索强度）
+    # ε-贪婪探索参数（余弦退火策略）
+    EPS_START = 1.0       # 初始最大探索率
+    EPS_END = 0.001        # 最小探索率
+    
+    # 训练总轮数（用于余弦退火）
+    MAX_EPISODES = 1000
     
     # 奖励参数
     FOOD_REWARD = 20.0
-    COLLISION_PENALTY = -25.0
-    STEP_PENALTY = -0.5
-    PROGRESS_REWARD = 1.5  # 向食物靠近的奖励
+    COLLISION_PENALTY = -500.0
+    STEP_PENALTY = 0.1
+    PROGRESS_REWARD = 0.5  # 向食物靠近的奖励
     
     # 防自杀功能
     ENABLE_SUICIDE_PREVENTION = True  # 是否启用防自杀机制
