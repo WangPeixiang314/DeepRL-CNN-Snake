@@ -4,6 +4,7 @@ import os
 import pygame
 import time
 import torch
+import re
 from contextlib import contextmanager, redirect_stdout, redirect_stderr
 
 from agent import DQNAgent
@@ -28,7 +29,7 @@ def suppress_output():
                 # 恢复日志级别
                 logging.root.setLevel(original_log_level)
 
-def train(num_episodes=1000, visualize=True, verbose=True):
+def train(num_episodes=1000, visualize=True, verbose=True, pretrained_model=None):
     # 检测GPU并设置设备
     Config.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     if verbose:
@@ -44,6 +45,32 @@ def train(num_episodes=1000, visualize=True, verbose=True):
         initial_state = game.get_state()
         input_dim = len(initial_state)
         agent = DQNAgent(input_dim)
+        
+        # 如果有预训练模型，加载它
+        if pretrained_model:
+            model_path = os.path.join(Config.MODEL_DIR, pretrained_model)
+            if os.path.exists(model_path):
+                agent.policy_net.load(pretrained_model)
+                agent.target_net.load_state_dict(agent.policy_net.state_dict())
+                if verbose:
+                    print(f"成功加载预训练模型: {pretrained_model}")
+                
+                # 尝试从文件名提取episode数
+                try:
+                    import re
+                    match = re.search(r'ep(\d+)', pretrained_model)
+                    if match:
+                        start_episode = int(match.group(1))
+                        agent.episode = start_episode
+                        if verbose:
+                            print(f"从第 {start_episode} 轮开始继续训练")
+                except:
+                    if verbose:
+                        print("无法从文件名提取episode数，从第0轮开始")
+            else:
+                if verbose:
+                    print(f"警告: 模型文件 {pretrained_model} 不存在，将从头开始训练")
+        
         plotter = TrainingPlotter() if visualize else None
         stats = TrainingStats()
         
@@ -130,22 +157,68 @@ def train(num_episodes=1000, visualize=True, verbose=True):
 
 # 程序入口
 if __name__ == "__main__":
-
+    import argparse
     import time
+    
+    # 设置命令行参数解析
+    parser = argparse.ArgumentParser(description='训练贪吃蛇AI')
+    parser.add_argument('--model', type=str, help='预训练模型文件路径（相对于models目录）')
+    parser.add_argument('--episodes', type=int, default=50000, help='训练轮次数量')
+    parser.add_argument('--no-visualize', action='store_true', help='禁用可视化')
+    parser.add_argument('--verbose', action='store_true', default=True, help='启用详细输出')
+    
+    args = parser.parse_args()
+    
     begin = time.time()
     try:
-        N = 50000
-        train(num_episodes=N, visualize=True, verbose=True)
+        N = args.episodes
+        
+        # 如果有预训练模型，先加载
+        if args.model:
+            print(f"正在加载预训练模型: {args.model}")
+            # 创建游戏实例获取状态维度
+            game = SnakeGame(visualize=not args.no_visualize)
+            initial_state = game.get_state()
+            input_dim = len(initial_state)
+            agent = DQNAgent(input_dim)
+            
+            # 加载指定模型
+            model_path = os.path.join(Config.MODEL_DIR, args.model)
+            if os.path.exists(model_path):
+                agent.policy_net.load(args.model)
+                agent.target_net.load_state_dict(agent.policy_net.state_dict())
+                print(f"成功加载预训练模型: {args.model}")
+                
+                # 从已训练的episode数继续
+                try:
+                    # 从文件名中提取episode数
+                    import re
+                    match = re.search(r'ep(\d+)', args.model)
+                    if match:
+                        start_episode = int(match.group(1))
+                        agent.episode = start_episode
+                        print(f"从第 {start_episode} 轮开始继续训练")
+                except:
+                    print("无法从文件名提取episode数，从第0轮开始")
+            else:
+                print(f"警告: 模型文件 {args.model} 不存在，将从头开始训练")
+        
+        # 开始训练
+        train(num_episodes=N, visualize=not args.no_visualize, verbose=args.verbose)
+        
     except KeyboardInterrupt:
         print("训练已中断")
     finally:
         # 确保在退出前保存模型
-        # 创建游戏实例获取状态维度
-        game = SnakeGame()
-        initial_state = game.get_state()
-        input_dim = len(initial_state)
-        agent = DQNAgent(input_dim)
-        agent.save_model()
-        pygame.quit()
-        print("模型已保存，程序退出")
-        print(f"总训练耗时：{(time.time()-begin):.2f} s，总训练轮次：{N}。")
+        try:
+            game = SnakeGame(visualize=False)  # 无可视化创建游戏实例
+            initial_state = game.get_state()
+            input_dim = len(initial_state)
+            agent = DQNAgent(input_dim)
+            agent.save_model()
+            pygame.quit()
+            print("模型已保存，程序退出")
+            print(f"总训练耗时：{(time.time()-begin):.2f} s，总训练轮次：{N}。")
+        except Exception as e:
+            print(f"保存模型时出错: {e}")
+            pygame.quit()

@@ -5,9 +5,12 @@ import torch
 
 
 class Config:
+    # 设备配置
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    
     # 网格参数
-    GRID_WIDTH = 12   # 地图网格宽度（单位：格）
-    GRID_HEIGHT = 12  # 地图网格高度（单位：格）
+    GRID_WIDTH = 6   # 地图网格宽度（单位：格）
+    GRID_HEIGHT = 6  # 地图网格高度（单位：格）
     LOCAL_VIEW_SIZE = 8  # 局部视野大小（边长，必须是偶数）
     BLOCK_SIZE = 40   # 每个网格块的像素大小
     WIDTH = GRID_WIDTH * BLOCK_SIZE
@@ -17,8 +20,8 @@ class Config:
     SPEED = 600
     
     # 模型参数
-    MLP_LAYER_COUNT = 7
-    MLP_BASE_SIZE = 1024
+    MLP_LAYER_COUNT = 4
+    MLP_BASE_SIZE = 512
     MLP_SIZE_DECAY = 0.5
     
     @staticmethod
@@ -30,7 +33,7 @@ class Config:
     OUTPUT_DIM = 3  # 输出层大小 [直行, 右转, 左转]
     
     # CNN网络参数 - 全局地图CNN
-    CNN_ALL_GRID_OUTPUT_DIM = 128  # 全局CNN输出特征维度
+    CNN_ALL_GRID_OUTPUT_DIM = 64  # 全局CNN输出特征维度
     CNN_ALL_GRID_CONFIG = {
         'input_channels': 3,    # 输入通道数 [蛇身, 食物, 蛇头]
         'conv_layers': [16, 32, 64],  # 每层卷积核数量（支持任意层数）
@@ -45,7 +48,7 @@ class Config:
     }
     
     # CNN网络参数 - 局部视野CNN
-    CNN_LOCAL_OUTPUT_DIM = 64  # 局部CNN输出特征维度
+    CNN_LOCAL_OUTPUT_DIM = 32  # 局部CNN输出特征维度
     CNN_LOCAL_CONFIG = {
         'input_channels': 3,    # 输入通道数 [蛇身, 食物, 蛇头]
         'conv_layers': [8, 16, 32],  # 每层卷积核数量（支持任意层数）
@@ -59,7 +62,7 @@ class Config:
     
     # 训练参数
     BATCH_SIZE = 256
-    MEMORY_CAPACITY = 8000_000
+    MEMORY_CAPACITY = 800_000
     LEARNING_RATE = 0.0005
     GAMMA = 0.995
     TARGET_UPDATE = 100  # 更新目标网络的间隔
@@ -75,12 +78,12 @@ class Config:
     EPS_START = 1.0
     EPS_END = 0.02
     
-    # ε-贪婪探索参数（余弦退火策略）
-    EPS_START = 1.0       # 初始最大探索率
+    # ε-贪婪探索参数（指数衰减策略）
+    EPS_START = 1       # 初始最大探索率
     EPS_END = 0.001        # 最小探索率
     
-    # 训练总轮数（用于余弦退火）
-    MAX_EPISODES = 1000
+    # 训练总轮数（用于指数衰减探索率）
+    MAX_EPISODES = 500
     
     # 奖励参数
     FOOD_REWARD = 20.0

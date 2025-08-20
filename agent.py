@@ -47,7 +47,7 @@ class DQNAgent:
         self.policy_net.train()
     
     def _calculate_epsilon(self, episode):
-        """计算探索率的余弦退火策略
+        """计算探索率的指数衰减策略（无周期性重启）
         
         Args:
             episode: 当前局数
@@ -55,22 +55,21 @@ class DQNAgent:
         Returns:
             epsilon: 计算出的探索率
         """
-        # 最普通的余弦退火epsilon贪婪策略
-        # epsilon = EPS_END + (EPS_START - EPS_END) * (1 + cos(pi * episode / max_episodes)) / 2
-        
-        # 使用Config中定义的最大训练轮数
+        # 使用指数衰减替代线性衰减，更快的初期衰减
         max_episodes = Config.MAX_EPISODES
         
-        # 余弦退火公式
-        cosine_arg = np.pi * episode / max_episodes
-        epsilon = Config.EPS_END + (Config.EPS_START - Config.EPS_END) * (1 + np.cos(cosine_arg)) / 2
+        # 指数衰减：epsilon = EPS_END + (EPS_START - EPS_END) * exp(-decay_rate * episode)
+        # 设置衰减率使得在max_episodes时接近EPS_END
+        decay_rate = 5.0 / max_episodes  # 调整这个值可以改变衰减速度
+        
+        epsilon = Config.EPS_END + (Config.EPS_START - Config.EPS_END) * np.exp(-decay_rate * episode)
         
         # 确保epsilon不小于最小值
         return max(Config.EPS_END, epsilon)
 
     def select_action(self, state):
-        """选择动作（使用余弦退火ε-贪婪策略）"""
-        # 使用余弦退火计算探索率
+        """选择动作（使用指数衰减ε-贪婪策略）"""
+        # 使用指数衰减计算探索率（无周期性重启）
         self.epsilon_threshold = self._calculate_epsilon(self.episode)
         
         with torch.no_grad():
@@ -180,6 +179,10 @@ class DQNAgent:
         if is_best:
             self.policy_net.save("snake_dqn_best.pth")
     
+    def load_model(self, filename):
+        """加载指定模型文件"""
+        return self.policy_net.load(filename)
+    
     def record_score(self, score, episode_reward=0):
         """记录分数"""
         self.scores.append(score)
@@ -191,7 +194,7 @@ class DQNAgent:
             print(f"新记录! 分数: {score}")
         
         # 定期保存模型
-        if self.episode % 5 == 0:
+        if self.episode % 100 == 0:
             self.save_model()
         
         # 定期更新目标网络

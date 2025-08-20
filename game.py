@@ -176,6 +176,10 @@ class SnakeGame:
         # 6. 渲染游戏
         self.render()
         
+        # 检查是否游戏胜利
+        if done and self.score >= Config.GRID_WIDTH * Config.GRID_HEIGHT - 3:  # 初始蛇身长度为3
+            print(f"恭喜！游戏胜利！最终分数: {self.score}")
+        
         return next_state, reward, done, self.score
 
     def render(self):
